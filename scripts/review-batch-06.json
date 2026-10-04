@@ -1,0 +1,1445 @@
+{
+  "range": [
+    501,
+    600
+  ],
+  "date": "2026-10-01",
+  "reviewed": 100,
+  "verbal": 100,
+  "quantitative": 0,
+  "specificFindings": 65,
+  "records": [
+    {
+      "id": "V-A-051",
+      "category": "التناظر اللفظي",
+      "answerText": "كتابة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-052",
+      "category": "التناظر اللفظي",
+      "answerText": "قص",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-053",
+      "category": "التناظر اللفظي",
+      "answerText": "سمع",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-054",
+      "category": "التناظر اللفظي",
+      "answerText": "تذوق",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-055",
+      "category": "التناظر اللفظي",
+      "answerText": "استماع",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-056",
+      "category": "التناظر اللفظي",
+      "answerText": "وزن",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-057",
+      "category": "التناظر اللفظي",
+      "answerText": "طول",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-058",
+      "category": "التناظر اللفظي",
+      "answerText": "طالب",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-059",
+      "category": "التناظر اللفظي",
+      "answerText": "مريض",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-060",
+      "category": "التناظر اللفظي",
+      "answerText": "حديد",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-061",
+      "category": "التناظر اللفظي",
+      "answerText": "مدرسة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-062",
+      "category": "التناظر اللفظي",
+      "answerText": "مستشفى",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-063",
+      "category": "التناظر اللفظي",
+      "answerText": "طائر",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-064",
+      "category": "التناظر اللفظي",
+      "answerText": "نبتة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-065",
+      "category": "التناظر اللفظي",
+      "answerText": "كتاب",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-066",
+      "category": "التناظر اللفظي",
+      "answerText": "طائرة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-067",
+      "category": "التناظر اللفظي",
+      "answerText": "مدرسة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-068",
+      "category": "التناظر اللفظي",
+      "answerText": "نهاية",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-069",
+      "category": "التناظر اللفظي",
+      "answerText": "غدًا",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-070",
+      "category": "التناظر اللفظي",
+      "answerText": "منخفض",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-071",
+      "category": "التناظر اللفظي",
+      "answerText": "بعيد",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-072",
+      "category": "التناظر اللفظي",
+      "answerText": "جرأة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-073",
+      "category": "التناظر اللفظي",
+      "answerText": "جلي",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-074",
+      "category": "التناظر اللفظي",
+      "answerText": "طعام",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-075",
+      "category": "التناظر اللفظي",
+      "answerText": "مظلة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-076",
+      "category": "التناظر اللفظي",
+      "answerText": "صحراء",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-077",
+      "category": "التناظر اللفظي",
+      "answerText": "خلية",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-078",
+      "category": "التناظر اللفظي",
+      "answerText": "حليب",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-079",
+      "category": "التناظر اللفظي",
+      "answerText": "صوف",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-080",
+      "category": "التناظر اللفظي",
+      "answerText": "فخار",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-081",
+      "category": "التناظر اللفظي",
+      "answerText": "أدوات حديدية",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-082",
+      "category": "التناظر اللفظي",
+      "answerText": "حذر",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-083",
+      "category": "التناظر اللفظي",
+      "answerText": "حل",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-084",
+      "category": "التناظر اللفظي",
+      "answerText": "تعلم",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-085",
+      "category": "التناظر اللفظي",
+      "answerText": "نجاح",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-086",
+      "category": "التناظر اللفظي",
+      "answerText": "حرارة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-087",
+      "category": "التناظر اللفظي",
+      "answerText": "دفء",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-088",
+      "category": "التناظر اللفظي",
+      "answerText": "موقع",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-089",
+      "category": "التناظر اللفظي",
+      "answerText": "قفل",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-090",
+      "category": "التناظر اللفظي",
+      "answerText": "ملابس",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-091",
+      "category": "التناظر اللفظي",
+      "answerText": "آثار",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها.",
+        "تحديد العلاقة وإزالة تداخل محتمل بين الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-092",
+      "category": "التناظر اللفظي",
+      "answerText": "رياضة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-093",
+      "category": "التناظر اللفظي",
+      "answerText": "تجربة",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-094",
+      "category": "التناظر اللفظي",
+      "answerText": "تنفس",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-095",
+      "category": "التناظر اللفظي",
+      "answerText": "قص",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-096",
+      "category": "التناظر اللفظي",
+      "answerText": "تصوير",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-097",
+      "category": "التناظر اللفظي",
+      "answerText": "حجم",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-098",
+      "category": "التناظر اللفظي",
+      "answerText": "زمن",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-099",
+      "category": "التناظر اللفظي",
+      "answerText": "ظهر",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-100",
+      "category": "التناظر اللفظي",
+      "answerText": "تعاكس معنى",
+      "findings": [
+        "استبدال مشتتات متكررة بعيدة عن العلاقة بخيارات دلالية مرتبطة بها."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-051",
+      "category": "إكمال الجمل",
+      "answerText": "الأولويات",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-052",
+      "category": "إكمال الجمل",
+      "answerText": "مراجعة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-053",
+      "category": "إكمال الجمل",
+      "answerText": "دقة",
+      "findings": [
+        "تجنب تعميم قطعي أو توضيح شروط المعنى."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-054",
+      "category": "إكمال الجمل",
+      "answerText": "استكمال",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-055",
+      "category": "إكمال الجمل",
+      "answerText": "تحسين",
+      "findings": [
+        "تجنب تعميم قطعي أو توضيح شروط المعنى."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-056",
+      "category": "إكمال الجمل",
+      "answerText": "ملاءمة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-057",
+      "category": "إكمال الجمل",
+      "answerText": "الفهم",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-058",
+      "category": "إكمال الجمل",
+      "answerText": "الأخطاء",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-059",
+      "category": "إكمال الجمل",
+      "answerText": "المصدر",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-060",
+      "category": "إكمال الجمل",
+      "answerText": "النتيجة",
+      "findings": [
+        "تجنب تعميم قطعي أو توضيح شروط المعنى."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-061",
+      "category": "إكمال الجمل",
+      "answerText": "التفاصيل",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-062",
+      "category": "إكمال الجمل",
+      "answerText": "تعلمه",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-063",
+      "category": "إكمال الجمل",
+      "answerText": "الأولويات",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-064",
+      "category": "إكمال الجمل",
+      "answerText": "داعمة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-065",
+      "category": "إكمال الجمل",
+      "answerText": "سهولة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-066",
+      "category": "إكمال الجمل",
+      "answerText": "موثوقية",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-067",
+      "category": "إكمال الجمل",
+      "answerText": "الالتباس",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-068",
+      "category": "إكمال الجمل",
+      "answerText": "أصغر",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-069",
+      "category": "إكمال الجمل",
+      "answerText": "الانتظار",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-070",
+      "category": "إكمال الجمل",
+      "answerText": "المخاطر",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-071",
+      "category": "إكمال الجمل",
+      "answerText": "فحص",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-072",
+      "category": "إكمال الجمل",
+      "answerText": "سوء الفهم",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-073",
+      "category": "إكمال الجمل",
+      "answerText": "التحسن",
+      "findings": [
+        "تجنب تعميم قطعي أو توضيح شروط المعنى."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-074",
+      "category": "إكمال الجمل",
+      "answerText": "أعمق",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-075",
+      "category": "إكمال الجمل",
+      "answerText": "المقارنة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-076",
+      "category": "إكمال الجمل",
+      "answerText": "اعتماد",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-077",
+      "category": "إكمال الجمل",
+      "answerText": "اتساقًا",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-078",
+      "category": "إكمال الجمل",
+      "answerText": "تالية",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-079",
+      "category": "إكمال الجمل",
+      "answerText": "دقيقة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-080",
+      "category": "إكمال الجمل",
+      "answerText": "نفسه",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-081",
+      "category": "إكمال الجمل",
+      "answerText": "تثبيت",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-082",
+      "category": "إكمال الجمل",
+      "answerText": "التفكير",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-083",
+      "category": "إكمال الجمل",
+      "answerText": "تقييم",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-084",
+      "category": "إكمال الجمل",
+      "answerText": "الوسيلة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-085",
+      "category": "إكمال الجمل",
+      "answerText": "منطقيًا",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-086",
+      "category": "إكمال الجمل",
+      "answerText": "تفاصيل",
+      "findings": [
+        "تجنب تعميم قطعي أو توضيح شروط المعنى."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-087",
+      "category": "إكمال الجمل",
+      "answerText": "دقة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-088",
+      "category": "إكمال الجمل",
+      "answerText": "أدلة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-089",
+      "category": "إكمال الجمل",
+      "answerText": "حداثة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-090",
+      "category": "إكمال الجمل",
+      "answerText": "تفسير",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-039",
+      "category": "الخطأ السياقي",
+      "answerText": "أطول",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-040",
+      "category": "الخطأ السياقي",
+      "answerText": "يزيد",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-041",
+      "category": "الخطأ السياقي",
+      "answerText": "زيادة",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة.",
+        "صياغة تصحيح بكلمة واحدة مع قرينة صريحة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-042",
+      "category": "الخطأ السياقي",
+      "answerText": "يضعف",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-043",
+      "category": "الخطأ السياقي",
+      "answerText": "زيادة",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-044",
+      "category": "الخطأ السياقي",
+      "answerText": "يقل",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-045",
+      "category": "الخطأ السياقي",
+      "answerText": "فوضى",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-046",
+      "category": "الخطأ السياقي",
+      "answerText": "أقل",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-047",
+      "category": "الخطأ السياقي",
+      "answerText": "أقل",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-048",
+      "category": "الخطأ السياقي",
+      "answerText": "يزداد",
+      "findings": [
+        "إزالة الخيارات التي تسمح بتصحيح بديل وتقوية القرينة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    }
+  ],
+  "limits": "مراجعة تحريرية ومنطقية وليست اعتمادًا رسميًا؛ الصعوبة تقدير يحتاج معايرة."
+}

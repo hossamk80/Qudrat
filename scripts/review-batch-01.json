@@ -1,0 +1,1417 @@
+{
+  "date": "2026-10-01",
+  "scope": "أول 100 سجل بترتيب البنك؛ لفظي 50 وكمي 50",
+  "reviewed": 100,
+  "findingsQuestions": 37,
+  "replaced": 1,
+  "records": [
+    {
+      "id": "V-A-001",
+      "previousId": "V-A-001",
+      "category": "التناظر اللفظي",
+      "answerText": "وزن",
+      "findings": [
+        "إزالة خيار «كتلة» لأنه ينافس «وزن» بحسب نوع الميزان."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-002",
+      "previousId": "V-A-002",
+      "category": "التناظر اللفظي",
+      "answerText": "رطوبة",
+      "findings": [
+        "إزالة «صوت» لأنه قد يكون أثرًا للمطر أيضًا، واستبداله بخيار لا ينافس الرطوبة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source",
+        "options"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-003",
+      "previousId": "V-A-003",
+      "category": "التناظر اللفظي",
+      "answerText": "تنقية الماء",
+      "findings": [
+        "تحديد المقصود بالمرشح وإزالة الالتباس بين الشخص المرشح وأداة الترشيح."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-004",
+      "previousId": "V-A-004",
+      "category": "التناظر اللفظي",
+      "answerText": "لوحات وآثار",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-005",
+      "previousId": "V-A-005",
+      "category": "التناظر اللفظي",
+      "answerText": "تعلم",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-006",
+      "previousId": "V-A-006",
+      "category": "التناظر اللفظي",
+      "answerText": "أجرام سماوية",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-007",
+      "previousId": "V-A-007",
+      "category": "التناظر اللفظي",
+      "answerText": "حجر",
+      "findings": [
+        "تقييد الإزميل الحجري لأن الإزميل يُستخدم في مواد أخرى أيضًا."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-008",
+      "previousId": "V-A-008",
+      "category": "التناظر اللفظي",
+      "answerText": "الدخول إلى حساب",
+      "findings": [
+        "توحيد علاقة الأداة بما تسمح بالوصول إليه."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-009",
+      "previousId": "V-A-009",
+      "category": "التناظر اللفظي",
+      "answerText": "فخار",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-A-010",
+      "previousId": "V-A-010",
+      "category": "التناظر اللفظي",
+      "answerText": "بداية الليل",
+      "findings": [
+        "استبدال علاقة الفجر والصباح بعلاقة أوضح بين الحدث وبداية الفترة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-001",
+      "previousId": "V-C-001",
+      "category": "إكمال الجمل",
+      "answerText": "دقة / موثوقية",
+      "findings": [
+        "تصحيح كتابة بطئًا إلى بطءًا."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-002",
+      "previousId": "V-C-002",
+      "category": "إكمال الجمل",
+      "answerText": "الربط",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-003",
+      "previousId": "V-C-003",
+      "category": "إكمال الجمل",
+      "answerText": "موثوقًا / تحقق",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-004",
+      "previousId": "V-C-004",
+      "category": "إكمال الجمل",
+      "answerText": "الحصيلة اللغوية",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-005",
+      "previousId": "V-C-005",
+      "category": "إكمال الجمل",
+      "answerText": "التحقق من",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-006",
+      "previousId": "V-C-006",
+      "category": "إكمال الجمل",
+      "answerText": "مراجعة / التمسك",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-007",
+      "previousId": "V-C-007",
+      "category": "إكمال الجمل",
+      "answerText": "دقة",
+      "findings": [
+        "تجنّب الإيحاء بأن دقة القياس وحدها تكفل موثوقية النتائج."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-008",
+      "previousId": "V-C-008",
+      "category": "إكمال الجمل",
+      "answerText": "توقع",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-009",
+      "previousId": "V-C-009",
+      "category": "إكمال الجمل",
+      "answerText": "المخاطر / إدارة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-C-010",
+      "previousId": "V-C-010",
+      "category": "إكمال الجمل",
+      "answerText": "منع",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-001",
+      "previousId": "V-E-001",
+      "category": "الخطأ السياقي",
+      "answerText": "تقليل",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-002",
+      "previousId": "V-E-002",
+      "category": "الخطأ السياقي",
+      "answerText": "جفّت",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-003",
+      "previousId": "V-E-003",
+      "category": "الخطأ السياقي",
+      "answerText": "مضلّل",
+      "findings": [
+        "إزالة تعدد الكلمات التي يمكن تغييرها لإصلاح المعنى، مع قرينة تؤيد صحة التقرير."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-004",
+      "previousId": "V-E-004",
+      "category": "الخطأ السياقي",
+      "answerText": "المجهول",
+      "findings": [
+        "إزالة تعارضين في جملة واحدة وحصر الخلل في وصف الأثر بعد فحصه."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-005",
+      "previousId": "V-E-005",
+      "category": "الخطأ السياقي",
+      "answerText": "يكثر",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-006",
+      "previousId": "V-E-006",
+      "category": "الخطأ السياقي",
+      "answerText": "تقليل",
+      "findings": [
+        "إضافة «تقليل» إلى الخيارات؛ «موثوقيتها» لم تكن الكلمة المعيبة في الصياغة الأصلية."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-007",
+      "previousId": "V-E-007",
+      "category": "الخطأ السياقي",
+      "answerText": "تفاوتها",
+      "findings": [
+        "إزالة عبارة تغير المعيار المناقضة لوحدة المعيار، وتحديد كلمة الخطأ."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-008",
+      "previousId": "V-E-008",
+      "category": "الخطأ السياقي",
+      "answerText": "يزيد",
+      "findings": [
+        "إزالة «فوضى» من الخيارات لمنع وجود إصلاحين صحيحين للمعنى."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-001",
+      "previousId": "V-O-001",
+      "category": "الارتباط والاختلاف",
+      "answerText": "محيط",
+      "findings": [
+        "الشرح الأصلي يقول الثلاثة الأولى رغم وجود الخيار المختلف في البداية."
+      ],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-002",
+      "previousId": "V-O-002",
+      "category": "الارتباط والاختلاف",
+      "answerText": "نسبة مئوية",
+      "findings": [
+        "الشرح الأصلي يقول الثلاثة الأولى وفيها النسبة المئوية، وهي ليست نزعة مركزية."
+      ],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-003",
+      "previousId": "V-O-003",
+      "category": "الارتباط والاختلاف",
+      "answerText": "سرعة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-004",
+      "previousId": "V-O-004",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مثلث",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-005",
+      "previousId": "V-O-005",
+      "category": "الارتباط والاختلاف",
+      "answerText": "تجميد",
+      "findings": [
+        "الشرح الأصلي يشمل تجميد ضمن الثلاثة الأولى بدل تسمية العمليات المتقاربة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-006",
+      "previousId": "V-O-006",
+      "category": "الارتباط والاختلاف",
+      "answerText": "سيارة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-007",
+      "previousId": "V-O-007",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مطر",
+      "findings": [
+        "الشرح الأصلي يشمل مطر ضمن الثلاثة الأولى بدل تسمية وسائل التواصل."
+      ],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-008",
+      "previousId": "V-O-008",
+      "category": "الارتباط والاختلاف",
+      "answerText": "سباحة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-001",
+      "previousId": "V-R-001",
+      "category": "استيعاب المقروء",
+      "answerText": "التخطيط يجمع وضوح الهدف والمرونة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-002",
+      "previousId": "V-R-002",
+      "category": "استيعاب المقروء",
+      "answerText": "تغيير الوسيلة قد يكون مناسبًا",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-003",
+      "previousId": "V-R-003",
+      "category": "استيعاب المقروء",
+      "answerText": "القابلية للتعديل",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-004",
+      "previousId": "V-R-004",
+      "category": "استيعاب المقروء",
+      "answerText": "الفائدة من القراءة تعتمد على التفاعل والفهم",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-005",
+      "previousId": "V-R-005",
+      "category": "استيعاب المقروء",
+      "answerText": "التمييز بين الرأي والمعلومة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-006",
+      "previousId": "V-R-006",
+      "category": "استيعاب المقروء",
+      "answerText": "لا تضمن الفائدة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-007",
+      "previousId": "V-R-007",
+      "category": "استيعاب المقروء",
+      "answerText": "البيانات تحتاج إلى جودة وتفسير صحيح",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-008",
+      "previousId": "V-R-008",
+      "category": "استيعاب المقروء",
+      "answerText": "قد تكون البيانات صحيحة لكن الاستنتاج ضعيفًا",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-009",
+      "previousId": "V-R-009",
+      "category": "استيعاب المقروء",
+      "answerText": "عند سوء تفسيرها",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-010",
+      "previousId": "V-R-010",
+      "category": "استيعاب المقروء",
+      "answerText": "التعلم الفعال يبني الجديد على المعرفة السابقة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-011",
+      "previousId": "V-R-011",
+      "category": "استيعاب المقروء",
+      "answerText": "مراجعة المعرفة السابقة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-012",
+      "previousId": "V-R-012",
+      "category": "استيعاب المقروء",
+      "answerText": "اكتشاف ما يحتاج إلى مراجعة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-013",
+      "previousId": "V-R-013",
+      "category": "استيعاب المقروء",
+      "answerText": "فهم الكلمة أو الفكرة من الجملة المحيطة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-014",
+      "previousId": "V-R-014",
+      "category": "استيعاب المقروء",
+      "answerText": "التنبيه إلى أن البيانات تحتاج إلى تفسير مسؤول",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-001",
+      "previousId": "Q-A-001",
+      "category": "الحساب",
+      "answerText": "198",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-002",
+      "previousId": "Q-A-002",
+      "category": "الحساب",
+      "answerText": "100",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-003",
+      "previousId": "Q-A-003",
+      "category": "الحساب",
+      "answerText": "240",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-004",
+      "previousId": "Q-A-004",
+      "category": "الحساب",
+      "answerText": "22",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-005",
+      "previousId": "Q-A-005",
+      "category": "الحساب",
+      "answerText": "70",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-006",
+      "previousId": "Q-A-006",
+      "category": "الحساب",
+      "answerText": "102",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-007",
+      "previousId": "Q-A-007",
+      "category": "الحساب",
+      "answerText": "60",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-008",
+      "previousId": "Q-A-008",
+      "category": "الحساب",
+      "answerText": "80%",
+      "findings": [
+        "إزالة الالتباس بين عدد الأسئلة وعدد الإجابات الصحيحة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-009",
+      "previousId": "Q-A-009",
+      "category": "الحساب",
+      "answerText": "27",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-A-010",
+      "previousId": "Q-A-010",
+      "category": "الحساب",
+      "answerText": "13",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-001",
+      "previousId": "Q-R-001",
+      "category": "النسب والتناسب",
+      "answerText": "24",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-002",
+      "previousId": "Q-R-002",
+      "category": "النسب والتناسب",
+      "answerText": "60",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-003",
+      "previousId": "Q-R-003",
+      "category": "النسب والتناسب",
+      "answerText": "2 كم",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-004",
+      "previousId": "Q-R-004",
+      "category": "النسب والتناسب",
+      "answerText": "490",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-005",
+      "previousId": "Q-R-005",
+      "category": "النسب والتناسب",
+      "answerText": "4",
+      "findings": [
+        "توضيح مصطلح العصير المركز ووحدة الأكواب المتساوية."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-006",
+      "previousId": "Q-R-006",
+      "category": "النسب والتناسب",
+      "answerText": "270",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-007",
+      "previousId": "Q-R-007",
+      "category": "النسب والتناسب",
+      "answerText": "1000",
+      "findings": [
+        "استبدال الأصغر بالنصيب الأقل لمنع تفسيره بأنه أصغر الشخصين عمرًا."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-008",
+      "previousId": "Q-R-008",
+      "category": "النسب والتناسب",
+      "answerText": "5",
+      "findings": [
+        "ذكر ثبات الإنتاجية والعمل اليومي عند استخدام التناسب العكسي."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-001",
+      "previousId": "Q-G-001",
+      "category": "الجبر",
+      "answerText": "7",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-002",
+      "previousId": "Q-G-002",
+      "category": "الجبر",
+      "answerText": "10",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-003",
+      "previousId": "Q-G-003",
+      "category": "الجبر",
+      "answerText": "11",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-004",
+      "previousId": "Q-G-004",
+      "category": "الجبر",
+      "answerText": "65",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-005",
+      "previousId": "Q-G-005",
+      "category": "الجبر",
+      "answerText": "66",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-006",
+      "previousId": "Q-G-006",
+      "category": "الجبر",
+      "answerText": "24",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-007",
+      "previousId": "Q-G-007",
+      "category": "الجبر",
+      "answerText": "23",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-008",
+      "previousId": "Q-G-008",
+      "category": "الجبر",
+      "answerText": "58",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-001",
+      "previousId": "Q-H-001",
+      "category": "الهندسة",
+      "answerText": "70 سم²",
+      "findings": [
+        "إضافة وحدة المساحة إلى الخيارات."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-002",
+      "previousId": "Q-H-002",
+      "category": "الهندسة",
+      "answerText": "84 سم²",
+      "findings": [
+        "توضيح أن المربع الصغير داخل المربع الكبير، وإضافة وحدة المساحة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-003",
+      "previousId": "Q-H-003",
+      "category": "الهندسة",
+      "answerText": "10 سم",
+      "findings": [
+        "إضافة وحدة طول الوتر إلى الخيارات."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-004",
+      "previousId": "Q-H-004",
+      "category": "الهندسة",
+      "answerText": "44 سم",
+      "findings": [
+        "إضافة وحدة المحيط إلى الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-005",
+      "previousId": "Q-H-005",
+      "category": "الهندسة",
+      "answerText": "154 سم²",
+      "findings": [
+        "إضافة وحدة المساحة إلى الخيارات."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-006",
+      "previousId": "Q-H-006",
+      "category": "الهندسة",
+      "answerText": "13 سم",
+      "findings": [
+        "إضافة وحدة طول القطر إلى الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-007",
+      "previousId": "Q-H-007",
+      "category": "الهندسة",
+      "answerText": "70°",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-008",
+      "previousId": "Q-H-008",
+      "category": "الهندسة",
+      "answerText": "25ط سم²",
+      "findings": [
+        "إضافة وحدة المساحة إلى الخيارات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-001",
+      "previousId": "Q-S-001",
+      "category": "الإحصاء",
+      "answerText": "19",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-002",
+      "previousId": "Q-S-002",
+      "category": "الإحصاء",
+      "answerText": "10",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-003",
+      "previousId": "Q-S-003",
+      "category": "الإحصاء",
+      "answerText": "18",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-004",
+      "previousId": "Q-S-004",
+      "category": "الإحصاء",
+      "answerText": "16",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-005",
+      "previousId": "Q-S-005",
+      "category": "الإحصاء",
+      "answerText": "25",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-006",
+      "previousId": "Q-S-006",
+      "category": "الإحصاء",
+      "answerText": "يرتفع",
+      "findings": [
+        "توضيح أن 20 قيمة جديدة واحدة، وليست إضافة 20 إلى كل قيمة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-001",
+      "previousId": "Q-P-001",
+      "category": "الاحتمال",
+      "answerText": "3/10",
+      "findings": [
+        "ذكر عشوائية السحب وتساوي فرص اختيار الكرات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-002",
+      "previousId": "Q-P-002",
+      "category": "الاحتمال",
+      "answerText": "0.3",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-003",
+      "previousId": "Q-P-003",
+      "category": "الاحتمال",
+      "answerText": "2/5",
+      "findings": [
+        "ذكر عشوائية الاختيار وتساوي فرص الأقلام."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-004R",
+      "previousId": "Q-P-004",
+      "category": "الاحتمال",
+      "answerText": "1/2",
+      "findings": [
+        "استبدال سؤال يكاد يكرر Q-P-002 بسؤال مختلف، بمعرف جديد لفصل تاريخ المحاولات."
+      ],
+      "changedFields": [
+        "id",
+        "skill",
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-001",
+      "previousId": "Q-T-001",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "3",
+      "findings": [
+        "تحديد الانطلاق في الوقت نفسه وثبات السرعة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-002",
+      "previousId": "Q-T-002",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "3",
+      "findings": [
+        "توضيح شروط الإنتاجية وساعات العمل الثابتة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-003",
+      "previousId": "Q-T-003",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "4",
+      "findings": [
+        "ذكر عمل المضخات معًا وبمعدلات ثابتة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-004",
+      "previousId": "Q-T-004",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "يومان",
+      "findings": [
+        "ذكر العمل معًا وعدم تغيير معدل كل عامل."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-005",
+      "previousId": "Q-T-005",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "200",
+      "findings": [
+        "تحديد الانطلاق في الوقت نفسه وثبات السرعة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-006",
+      "previousId": "Q-T-006",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "60",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    }
+  ],
+  "limits": [
+    "المراجعة تحريرية ومنطقية وليست اعتمادًا رسميًا أو تجربة سيكومترية.",
+    "الصعوبة تقدير تحريري وتحتاج معايرة باستخدام نتائج طلاب.",
+    "المحاولات السابقة تحتفظ بنصوصها ومفاتيحها الأصلية.",
+    "لم تشمل الدفعة بقية الأسئلة التسعمئة."
+  ]
+}

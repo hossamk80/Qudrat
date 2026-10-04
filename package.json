@@ -1,0 +1,14 @@
+{
+  "name": "qudrat",
+  "version": "2026.10.4",
+  "private": true,
+  "description": "Qudrat (GAT) practice platform with student accounts",
+  "engines": {
+    "node": ">=22.13"
+  },
+  "scripts": {
+    "start": "node server/server.js",
+    "test": "node scripts/test-server.cjs && node scripts/test-site.cjs && node scripts/test-learning.cjs && node scripts/test-reliability.cjs && node scripts/test-qiyas.cjs",
+    "test:browser": "node scripts/test-browser.cjs"
+  }
+}

@@ -1,0 +1,1447 @@
+{
+  "range": [
+    601,
+    700
+  ],
+  "date": "2026-10-01",
+  "reviewed": 100,
+  "verbal": 100,
+  "quantitative": 0,
+  "specificFindings": 72,
+  "records": [
+    {
+      "id": "V-E-049",
+      "category": "الخطأ السياقي",
+      "answerText": "يكثر",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-050",
+      "category": "الخطأ السياقي",
+      "answerText": "تزيد",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-051",
+      "category": "الخطأ السياقي",
+      "answerText": "تمنع",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-052",
+      "category": "الخطأ السياقي",
+      "answerText": "تعقيدًا",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-053",
+      "category": "الخطأ السياقي",
+      "answerText": "غموض",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-054",
+      "category": "الخطأ السياقي",
+      "answerText": "تقليل",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-055",
+      "category": "الخطأ السياقي",
+      "answerText": "واحد",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-056",
+      "category": "الخطأ السياقي",
+      "answerText": "الالتباس",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-057",
+      "category": "الخطأ السياقي",
+      "answerText": "تصعب",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-058",
+      "category": "الخطأ السياقي",
+      "answerText": "زيادة",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-059",
+      "category": "الخطأ السياقي",
+      "answerText": "يزداد",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-060",
+      "category": "الخطأ السياقي",
+      "answerText": "برودة",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-061",
+      "category": "الخطأ السياقي",
+      "answerText": "يزيد",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-062",
+      "category": "الخطأ السياقي",
+      "answerText": "تجاهل",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-063",
+      "category": "الخطأ السياقي",
+      "answerText": "أقل",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-064",
+      "category": "الخطأ السياقي",
+      "answerText": "الفوضى",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-065",
+      "category": "الخطأ السياقي",
+      "answerText": "يزيد",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-066",
+      "category": "الخطأ السياقي",
+      "answerText": "يعوق",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-067",
+      "category": "الخطأ السياقي",
+      "answerText": "كل",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-E-068",
+      "category": "الخطأ السياقي",
+      "answerText": "أقل",
+      "findings": [
+        "تقوية القرينة وإزالة خيارات تتيح تصحيحات منافسة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-039",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مطرقة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-040",
+      "category": "الارتباط والاختلاف",
+      "answerText": "لتر",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-041",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مدرسة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-042",
+      "category": "الارتباط والاختلاف",
+      "answerText": "كتاب",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-043",
+      "category": "الارتباط والاختلاف",
+      "answerText": "صيف",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-044",
+      "category": "الارتباط والاختلاف",
+      "answerText": "سريع",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-045",
+      "category": "الارتباط والاختلاف",
+      "answerText": "خشب",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-046",
+      "category": "الارتباط والاختلاف",
+      "answerText": "قلم",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-047",
+      "category": "الارتباط والاختلاف",
+      "answerText": "حاسوب",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-048",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مكتب",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-049",
+      "category": "الارتباط والاختلاف",
+      "answerText": "تنفس",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-050",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مطر",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-051",
+      "category": "الارتباط والاختلاف",
+      "answerText": "ملعقة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-052",
+      "category": "الارتباط والاختلاف",
+      "answerText": "الثلاثاء",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-053",
+      "category": "الارتباط والاختلاف",
+      "answerText": "كيلوجرام",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-054",
+      "category": "الارتباط والاختلاف",
+      "answerText": "متر",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-055",
+      "category": "الارتباط والاختلاف",
+      "answerText": "نهر",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-056",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مقص",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-057",
+      "category": "الارتباط والاختلاف",
+      "answerText": "سرعة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-058",
+      "category": "الارتباط والاختلاف",
+      "answerText": "سباحة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-059",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مطبخ",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-060",
+      "category": "الارتباط والاختلاف",
+      "answerText": "دائرة",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-061",
+      "category": "الارتباط والاختلاف",
+      "answerText": "نخلة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-062",
+      "category": "الارتباط والاختلاف",
+      "answerText": "ثلاجة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-063",
+      "category": "الارتباط والاختلاف",
+      "answerText": "متر",
+      "findings": [
+        "تحديد أن الخماسي شكل هندسي لا صفة عددية عامة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-064",
+      "category": "الارتباط والاختلاف",
+      "answerText": "قطن",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-065",
+      "category": "الارتباط والاختلاف",
+      "answerText": "درجة حرارة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-066",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مطر",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-067",
+      "category": "الارتباط والاختلاف",
+      "answerText": "كرسي",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-O-068",
+      "category": "الارتباط والاختلاف",
+      "answerText": "مربع",
+      "findings": [
+        "تحديد حرف المعنى ضمن أقسام الكلمة."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-075",
+      "category": "استيعاب المقروء",
+      "answerText": "جودة المعلومة تعتمد على التحقق من المصدر لا على انتشارها",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-076",
+      "category": "استيعاب المقروء",
+      "answerText": "مقارنة المصادر",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-077",
+      "category": "استيعاب المقروء",
+      "answerText": "المعلومة الشائعة قد تكون غير دقيقة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-078",
+      "category": "استيعاب المقروء",
+      "answerText": "جاذبة للانتباه",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-079",
+      "category": "استيعاب المقروء",
+      "answerText": "التنبيه إلى ضرورة التحقق من المعلومات",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-080",
+      "category": "استيعاب المقروء",
+      "answerText": "النوم المنتظم عامل مساعد للتعلم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-081",
+      "category": "استيعاب المقروء",
+      "answerText": "الانتباه والذاكرة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-082",
+      "category": "استيعاب المقروء",
+      "answerText": "تنظيم النوم يمكن أن يدعم الاستفادة من المذاكرة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-083",
+      "category": "استيعاب المقروء",
+      "answerText": "يوفر ظروفًا مناسبة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-084",
+      "category": "استيعاب المقروء",
+      "answerText": "توضيح دور النوم المساند للتعلم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-085",
+      "category": "استيعاب المقروء",
+      "answerText": "تقسيم المشكلة يساعد على تنظيم التفكير",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-086",
+      "category": "استيعاب المقروء",
+      "answerText": "مراجعة كل خطوة على حدة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-087",
+      "category": "استيعاب المقروء",
+      "answerText": "التقسيم لا يضمن سهولة الحل لكنه يوضح مساره",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-088",
+      "category": "استيعاب المقروء",
+      "answerText": "طريق أو تسلسل",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-089",
+      "category": "استيعاب المقروء",
+      "answerText": "عرض استراتيجية للتعامل مع المشكلات المعقدة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-090",
+      "category": "استيعاب المقروء",
+      "answerText": "التغذية الراجعة الفعالة محددة وتوجه للتحسين",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-091",
+      "category": "استيعاب المقروء",
+      "answerText": "تحديد الخطوة التالية",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-092",
+      "category": "استيعاب المقروء",
+      "answerText": "الحكم العام وحده لا يكفي للتحسين",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-093",
+      "category": "استيعاب المقروء",
+      "answerText": "تتغير من حالة إلى أخرى",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-094",
+      "category": "استيعاب المقروء",
+      "answerText": "بيان خصائص التغذية الراجعة المفيدة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-095",
+      "category": "استيعاب المقروء",
+      "answerText": "المتوسط وحده قد لا يكفي لوصف البيانات",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-096",
+      "category": "استيعاب المقروء",
+      "answerText": "النظر إلى المدى",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-097",
+      "category": "استيعاب المقروء",
+      "answerText": "مجموعتان لهما المتوسط نفسه قد تختلفان في توزيع القيم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-098",
+      "category": "استيعاب المقروء",
+      "answerText": "انتشار القيم وتباعدها",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-099",
+      "category": "استيعاب المقروء",
+      "answerText": "التنبيه إلى حدود الاعتماد على المتوسط وحده",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-100",
+      "category": "استيعاب المقروء",
+      "answerText": "التفكير النقدي هو فحص الأدلة قبل القبول",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-101",
+      "category": "استيعاب المقروء",
+      "answerText": "البحث عن تفسيرات بديلة",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-102",
+      "category": "استيعاب المقروء",
+      "answerText": "الرفض التلقائي ليس تفكيرًا نقديًا",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-103",
+      "category": "استيعاب المقروء",
+      "answerText": "أفكار تُقبل مؤقتًا كأساس للتفكير",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-104",
+      "category": "استيعاب المقروء",
+      "answerText": "تصحيح مفهوم التفكير النقدي",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-105",
+      "category": "استيعاب المقروء",
+      "answerText": "التلخيص الجيد يكشف مستوى الفهم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-106",
+      "category": "استيعاب المقروء",
+      "answerText": "تمييز الفكرة الأساسية عن التفاصيل",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-107",
+      "category": "استيعاب المقروء",
+      "answerText": "إعادة الصياغة مع حفظ المعنى مؤشر أفضل من النسخ الحرفي",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص.",
+        "تقييد إعادة الصياغة بحفظ المعنى كما ورد في النص."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-108",
+      "category": "استيعاب المقروء",
+      "answerText": "علامة أو دليل",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "ضبط تركيب خيار المعنى لغويًا."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-109",
+      "category": "استيعاب المقروء",
+      "answerText": "بيان دور التلخيص في اختبار الفهم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-110",
+      "category": "استيعاب المقروء",
+      "answerText": "إدارة الوقت تقوم على ترتيب الأولويات بواقعية",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "إدراج واقعية في المقطع حتى يكون سؤال معناها مستندًا إلى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-111",
+      "category": "استيعاب المقروء",
+      "answerText": "ترك مساحة للراحة أو للطوارئ",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "إدراج واقعية في المقطع حتى يكون سؤال معناها مستندًا إلى النص."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-112",
+      "category": "استيعاب المقروء",
+      "answerText": "الجدول المزدحم جدًا قد يكون أقل قابلية للتنفيذ",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص.",
+        "إدراج واقعية في المقطع حتى يكون سؤال معناها مستندًا إلى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-113",
+      "category": "استيعاب المقروء",
+      "answerText": "مناسبة للظروف الفعلية",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "إدراج واقعية في المقطع حتى يكون سؤال معناها مستندًا إلى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-114",
+      "category": "استيعاب المقروء",
+      "answerText": "توضيح مفهوم متوازن لإدارة الوقت",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "إدراج واقعية في المقطع حتى يكون سؤال معناها مستندًا إلى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-115",
+      "category": "استيعاب المقروء",
+      "answerText": "نوع السؤال يؤثر في عمق التفكير",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-116",
+      "category": "استيعاب المقروء",
+      "answerText": "مقارنة البدائل",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-117",
+      "category": "استيعاب المقروء",
+      "answerText": "أسئلة التفسير تتطلب تفكيرًا أكثر من الاسترجاع المباشر",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-118",
+      "category": "استيعاب المقروء",
+      "answerText": "درجة أكبر من الفهم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-119",
+      "category": "استيعاب المقروء",
+      "answerText": "بيان أثر نوع السؤال في التعلم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-120",
+      "category": "استيعاب المقروء",
+      "answerText": "قراءة الرسم البياني تتطلب الانتباه إلى عناصره",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-121",
+      "category": "استيعاب المقروء",
+      "answerText": "مقياس الرسم",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-122",
+      "category": "استيعاب المقروء",
+      "answerText": "الرسم الصحيح قد يُفسر خطأ إذا أهملت عناصره",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص.",
+        "تمييز العبارة المدعومة عن استنتاج أعمق؛ الجواب قريب من معنى صريح في النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-123",
+      "category": "استيعاب المقروء",
+      "answerText": "تعرض بإيجاز",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "V-R-124",
+      "category": "استيعاب المقروء",
+      "answerText": "التنبيه إلى القراءة الدقيقة للرسوم البيانية",
+      "findings": [
+        "استبدال خيارات وصفية شكلية بمشتتات مبنية على محتوى النص."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    }
+  ],
+  "limits": "مراجعة تحريرية ومنطقية وليست اعتمادًا رسميًا؛ الصعوبة تقدير يحتاج معايرة."
+}

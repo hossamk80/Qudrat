@@ -1,0 +1,1332 @@
+{
+  "range": [
+    401,
+    500
+  ],
+  "date": "2026-10-01",
+  "reviewed": 100,
+  "verbal": 0,
+  "quantitative": 100,
+  "specificFindings": 45,
+  "records": [
+    {
+      "id": "Q-R-019",
+      "category": "النسب والتناسب",
+      "answerText": "16",
+      "findings": [
+        "تحديد اتجاه النسبة بين العددين."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-020",
+      "category": "النسب والتناسب",
+      "answerText": "320",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-021",
+      "category": "النسب والتناسب",
+      "answerText": "64",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-022",
+      "category": "النسب والتناسب",
+      "answerText": "10",
+      "findings": [
+        "ذكر افتراضات التناسب العكسي في العمل."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-023",
+      "category": "النسب والتناسب",
+      "answerText": "15 كم/لتر",
+      "findings": [
+        "إصلاح تكرار كم في السؤال."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-024",
+      "category": "النسب والتناسب",
+      "answerText": "5",
+      "findings": [
+        "تحديد المقصود بالمركز واتجاه النسبة وحجم المزيج."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-025",
+      "category": "النسب والتناسب",
+      "answerText": "40%",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-026",
+      "category": "النسب والتناسب",
+      "answerText": "17.5 كم",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-027",
+      "category": "النسب والتناسب",
+      "answerText": "400",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-028",
+      "category": "النسب والتناسب",
+      "answerText": "20",
+      "findings": [
+        "ذكر ثبات حجم الرغيف والهدر."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-029",
+      "category": "النسب والتناسب",
+      "answerText": "56",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-030",
+      "category": "النسب والتناسب",
+      "answerText": "4",
+      "findings": [
+        "اشتراط العمل المتزامن وقابلية توزيع المهمة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-031",
+      "category": "النسب والتناسب",
+      "answerText": "30",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-032",
+      "category": "النسب والتناسب",
+      "answerText": "20%",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-R-033",
+      "category": "النسب والتناسب",
+      "answerText": "60 كم/س",
+      "findings": [
+        "تصحيح الفعل إلى قطعت."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-024",
+      "category": "الجبر",
+      "answerText": "12",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-025",
+      "category": "الجبر",
+      "answerText": "8",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-026",
+      "category": "الجبر",
+      "answerText": "7",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-027",
+      "category": "الجبر",
+      "answerText": "6",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-028",
+      "category": "الجبر",
+      "answerText": "7",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-029",
+      "category": "الجبر",
+      "answerText": "13",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-030",
+      "category": "الجبر",
+      "answerText": "25",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-031",
+      "category": "الجبر",
+      "answerText": "14",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-032",
+      "category": "الجبر",
+      "answerText": "16",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-033",
+      "category": "الجبر",
+      "answerText": "10",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-034",
+      "category": "الجبر",
+      "answerText": "7س",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-035",
+      "category": "الجبر",
+      "answerText": "3س+6",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-036",
+      "category": "الجبر",
+      "answerText": "7",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-037",
+      "category": "الجبر",
+      "answerText": "9",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-038",
+      "category": "الجبر",
+      "answerText": "16",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-039",
+      "category": "الجبر",
+      "answerText": "8",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-040",
+      "category": "الجبر",
+      "answerText": "81",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-041",
+      "category": "الجبر",
+      "answerText": "24",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-042",
+      "category": "الجبر",
+      "answerText": "15",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-043",
+      "category": "الجبر",
+      "answerText": "68",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-044",
+      "category": "الجبر",
+      "answerText": "القيمتان متساويتان",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-045",
+      "category": "الجبر",
+      "answerText": "7",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-046",
+      "category": "الجبر",
+      "answerText": "48",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-047",
+      "category": "الجبر",
+      "answerText": "25",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-G-048",
+      "category": "الجبر",
+      "answerText": "13",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-024",
+      "category": "الهندسة",
+      "answerText": "36 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-025",
+      "category": "الهندسة",
+      "answerText": "121 سم²",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-026",
+      "category": "الهندسة",
+      "answerText": "36 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-027",
+      "category": "الهندسة",
+      "answerText": "84 سم²",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-028",
+      "category": "الهندسة",
+      "answerText": "40 سم²",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد الارتفاع العمودي على القاعدة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-029",
+      "category": "الهندسة",
+      "answerText": "90°",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-030",
+      "category": "الهندسة",
+      "answerText": "90°",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-031",
+      "category": "الهندسة",
+      "answerText": "10 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تصحيح تعريف نصف القطر في الشرح: نصف طول القطر، لا نصف القطر الكامل."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-032",
+      "category": "الهندسة",
+      "answerText": "44 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-033",
+      "category": "الهندسة",
+      "answerText": "16ط سم²",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-034",
+      "category": "الهندسة",
+      "answerText": "17 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-035",
+      "category": "الهندسة",
+      "answerText": "125 سم³",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-036",
+      "category": "الهندسة",
+      "answerText": "120 سم³",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم."
+      ],
+      "changedFields": [
+        "difficulty",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-037",
+      "category": "الهندسة",
+      "answerText": "70 سم²",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-038",
+      "category": "الهندسة",
+      "answerText": "18 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-039",
+      "category": "الهندسة",
+      "answerText": "32 سم²",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-040",
+      "category": "الهندسة",
+      "answerText": "15 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-041",
+      "category": "الهندسة",
+      "answerText": "66 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-042",
+      "category": "الهندسة",
+      "answerText": "8 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-H-043",
+      "category": "الهندسة",
+      "answerText": "12 سم",
+      "findings": [
+        "تحديد وحدة الإجابة بما يناسب الطول أو المساحة أو الحجم.",
+        "تحديد المعطيات ووحداتها أو اتجاه معامل التكبير."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-012",
+      "category": "الإحصاء",
+      "answerText": "8",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-013",
+      "category": "الإحصاء",
+      "answerText": "5",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-014",
+      "category": "الإحصاء",
+      "answerText": "7",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-015",
+      "category": "الإحصاء",
+      "answerText": "4",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-016",
+      "category": "الإحصاء",
+      "answerText": "12",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-017",
+      "category": "الإحصاء",
+      "answerText": "20",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-018",
+      "category": "الإحصاء",
+      "answerText": "20",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-019",
+      "category": "الإحصاء",
+      "answerText": "3",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-020",
+      "category": "الإحصاء",
+      "answerText": "القيمتان متساويتان",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-021",
+      "category": "الإحصاء",
+      "answerText": "23",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-022",
+      "category": "الإحصاء",
+      "answerText": "410",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-023",
+      "category": "الإحصاء",
+      "answerText": "5",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-024",
+      "category": "الإحصاء",
+      "answerText": "لا يوجد",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-025",
+      "category": "الإحصاء",
+      "answerText": "20",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-S-026",
+      "category": "الإحصاء",
+      "answerText": "19",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-010",
+      "category": "الاحتمال",
+      "answerText": "2/5",
+      "findings": [
+        "تحديد عشوائية التجربة وتساوي الفرص أو انتظام النرد ومجال نتائجه."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-011",
+      "category": "الاحتمال",
+      "answerText": "1/2",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-012",
+      "category": "الاحتمال",
+      "answerText": "1/6",
+      "findings": [
+        "تحديد عشوائية التجربة وتساوي الفرص أو انتظام النرد ومجال نتائجه."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-013",
+      "category": "الاحتمال",
+      "answerText": "1/2",
+      "findings": [
+        "تحديد عشوائية التجربة وتساوي الفرص أو انتظام النرد ومجال نتائجه."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-014",
+      "category": "الاحتمال",
+      "answerText": "0.2",
+      "findings": [],
+      "changedFields": [
+        "difficulty",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-015",
+      "category": "الاحتمال",
+      "answerText": "1/2",
+      "findings": [
+        "تحديد عشوائية التجربة وتساوي الفرص أو انتظام النرد ومجال نتائجه."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-016",
+      "category": "الاحتمال",
+      "answerText": "1/2",
+      "findings": [
+        "تحديد عشوائية التجربة وتساوي الفرص أو انتظام النرد ومجال نتائجه."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-017",
+      "category": "الاحتمال",
+      "answerText": "1/3",
+      "findings": [
+        "تحديد عشوائية التجربة وتساوي الفرص أو انتظام النرد ومجال نتائجه."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-018",
+      "category": "الاحتمال",
+      "answerText": "1",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-P-019",
+      "category": "الاحتمال",
+      "answerText": "0",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-017",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "60 كم/س",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-018",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "3 ساعات",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة.",
+        "تحسين صيغة الساعات."
+      ],
+      "changedFields": [
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-019",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "280 كم",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-020",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "4",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-021",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "240",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-022",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "240 كم",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-023",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "120 كم",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-024",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "3.5 ساعة",
+      "findings": [
+        "توحيد صيغة الساعة."
+      ],
+      "changedFields": [
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-025",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "135 دقيقة",
+      "findings": [],
+      "changedFields": [
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-026",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "60 كم/س",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-027",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "4",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-028",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "50",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-029",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "ساعتان",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة.",
+        "تحسين صيغة الساعات."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "options",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-030",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "4",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    },
+    {
+      "id": "Q-T-031",
+      "category": "المعدل والعمل والزمن",
+      "answerText": "12",
+      "findings": [
+        "توضيح المتوسط أو ثبات المعدل وافتراضات العمل والحركة؛ واستبدال مثال العداء غير الواقعي عند الحاجة."
+      ],
+      "changedFields": [
+        "difficulty",
+        "text",
+        "explanation",
+        "source"
+      ],
+      "status": "مراجع تحريريًا"
+    }
+  ],
+  "limits": "مراجعة تحريرية ومنطقية وليست اعتمادًا رسميًا؛ الصعوبة تقدير يحتاج معايرة."
+}
