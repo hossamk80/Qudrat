@@ -225,10 +225,10 @@ function createServer(config = loadConfig()) {
     insertAudit: db.prepare(`INSERT INTO admin_audit
       (actor_id, actor_email, action, target_id, target_email, ip, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
     insertItem: db.prepare(`INSERT INTO items
-      (id, section, category, skill, difficulty, text, options, answer, explanation, source,
+      (id, section, category, skill_id, skill, difficulty, text, options, answer, explanation, source,
        fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`),
-    updateItem: db.prepare(`UPDATE items SET section = ?, category = ?, skill = ?, difficulty = ?,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`),
+    updateItem: db.prepare(`UPDATE items SET section = ?, category = ?, skill_id = ?, skill = ?, difficulty = ?,
       text = ?, options = ?, answer = ?, explanation = ?, source = ?, fingerprint = ?, updated_at = ?
       WHERE id = ?`),
     itemById: db.prepare('SELECT * FROM items WHERE id = ?'),
@@ -298,7 +298,7 @@ function createServer(config = loadConfig()) {
   };
 
   const itemRow = r => ({
-    id: r.id, section: r.section, category: r.category, skill: r.skill, difficulty: r.difficulty,
+    id: r.id, section: r.section, category: r.category, skillId: r.skill_id, skill: r.skill, difficulty: r.difficulty,
     text: r.text, options: JSON.parse(r.options), answer: r.answer, explanation: r.explanation,
     source: r.source, origin: r.origin, authorKind: r.author_kind, authorModel: r.author_model,
     status: r.status, createdAt: r.created_at, updatedAt: r.updated_at, reviewedAt: r.reviewed_at,
@@ -322,7 +322,7 @@ function createServer(config = loadConfig()) {
     if (item.id && q.itemById.get(item.id)) return { ok: false, errors: [`المعرف «${item.id}» مستخدم مسبقًا.`] };
     const id = item.id || nextItemId(item.section, item.category);
     const at = now();
-    q.insertItem.run(id, item.section, item.category, item.skill, item.difficulty, item.text,
+    q.insertItem.run(id, item.section, item.category, item.skillId, item.skill, item.difficulty, item.text,
       JSON.stringify(item.options), item.answer, item.explanation, item.source, print,
       origin, authorKind, authorModel, actor?.id ?? null, at, at);
     revise(req, actor, id, 'create', null, { ...item, id, origin, authorKind, authorModel });
@@ -441,10 +441,14 @@ function createServer(config = loadConfig()) {
       if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
       const counts = Object.fromEntries(items.STATUSES.map(s => [s, 0]));
       for (const r of q.itemCounts.all()) counts[r.status] = r.n;
+      const perSkill = Object.fromEntries(db.prepare(
+        "SELECT skill_id, COUNT(*) AS n FROM items WHERE status = 'live' GROUP BY skill_id").all()
+        .map(r => [r.skill_id, r.n]));
       json(res, 200, {
         sections: items.SECTIONS, categories: items.CATEGORIES, difficulties: items.DIFFICULTIES,
         statuses: items.STATUSES, answerLetters: items.ANSWER_LETTERS,
         templateColumns: items.TEMPLATE_COLUMNS, transitions: items.TRANSITIONS, counts,
+        skills: items.SKILLS.map(sk => ({ ...sk, live: perSkill[sk.id] || 0 })),
       });
     },
 
@@ -460,6 +464,8 @@ function createServer(config = loadConfig()) {
       if (items.STATUSES.includes(status)) { where.push('status = ?'); args.push(status); }
       if (items.SECTIONS.includes(section)) { where.push('section = ?'); args.push(section); }
       if (search) { where.push('(text LIKE ? OR id LIKE ?)'); args.push('%' + search + '%', '%' + search + '%'); }
+      const skill = url.searchParams.get('skill') || '';
+      if (items.SKILL_IDS.has(skill)) { where.push('skill_id = ?'); args.push(skill); }
       const sql = 'SELECT * FROM items' + (where.length ? ' WHERE ' + where.join(' AND ') : '')
         + ' ORDER BY updated_at DESC, id LIMIT ? OFFSET ?';
       const rows = db.prepare(sql).all(...args, limit, offset);
@@ -536,7 +542,7 @@ function createServer(config = loadConfig()) {
       const print = items.fingerprint(item);
       const clash = q.itemByPrint.get(print);
       if (clash && clash.id !== row.id) return json(res, 422, { error: `مكرر: يطابق «${clash.id}».`, duplicateOf: clash.id });
-      q.updateItem.run(item.section, item.category, item.skill, item.difficulty, item.text,
+      q.updateItem.run(item.section, item.category, item.skillId, item.skill, item.difficulty, item.text,
         JSON.stringify(item.options), item.answer, item.explanation, item.source, print, now(), row.id);
       // Editing a live question puts it back under review: students are reading it now.
       if (row.status === 'live') q.setItemStatus.run('reviewed', now(), 'reviewed', u.id, 'reviewed', now(), row.id);

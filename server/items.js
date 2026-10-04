@@ -3,6 +3,7 @@
 // a spreadsheet upload, or a model. One schema, one validator, one fingerprint. Adding
 // a second path that skips this file is how a bank ends up with three truths.
 const crypto = require('node:crypto');
+const taxonomy = require('./taxonomy');
 
 const SECTIONS = ['لفظي', 'كمي'];
 const DIFFICULTIES = ['سهل', 'متوسط', 'صعب'];
@@ -90,6 +91,7 @@ function validateItem(raw, { strict = false } = {}) {
     id: clean(raw && raw.id, LIMITS.id),
     section: clean(raw && raw.section, 20),
     category: clean(raw && raw.category, 60),
+    skillId: clean(raw && raw.skillId, 32),
     skill: clean(raw && raw.skill, LIMITS.skill),
     difficulty: clean(raw && raw.difficulty, 20),
     text: clean(raw && raw.text, LIMITS.text),
@@ -100,6 +102,20 @@ function validateItem(raw, { strict = false } = {}) {
   };
 
   if (item.id && !/^[A-Za-z0-9َ_-]{1,64}$/.test(item.id)) errors.push('المعرف يقبل الحروف اللاتينية والأرقام والشرطات فقط.');
+  // A caller may name the skill, or leave it to the taxonomy to place the question from its
+  // category and descriptive label. A named skill that is not on the list is an error: the
+  // list is closed on purpose, because an open one is how 631 skills happened.
+  if (item.skillId && !taxonomy.SKILL_IDS.has(item.skillId)) {
+    errors.push(`المهارة «${item.skillId}» ليست من قائمة المهارات المعتمدة.`);
+  } else if (!item.skillId) {
+    item.skillId = taxonomy.classify(item) || '';
+  }
+  if (item.skillId) {
+    const skill = taxonomy.SKILL_BY_ID.get(item.skillId);
+    if (skill && item.section && skill.section !== item.section) {
+      errors.push(`المهارة «${skill.label}» تخصّ قسم ${skill.section}، والسؤال في ${item.section}.`);
+    }
+  }
   if (!SECTIONS.includes(item.section)) errors.push(`القسم يجب أن يكون أحد: ${SECTIONS.join('، ')}.`);
   else if (!CATEGORIES[item.section].includes(item.category)) {
     errors.push(`التصنيف «${item.category || '—'}» ليس من تصنيفات ${item.section}: ${CATEGORIES[item.section].join('، ')}.`);
@@ -116,6 +132,7 @@ function validateItem(raw, { strict = false } = {}) {
     // student needs explained is the whole reason they are here.
     if (item.explanation.length < 10) errors.push('الشرح مطلوب قبل النشر (١٠ أحرف على الأقل).');
     if (!item.source) errors.push('المرجع مطلوب قبل النشر: وثّق أصالة السؤال.');
+    if (!item.skillId) errors.push('لا يمكن نشر سؤال بلا مهارة من القائمة المعتمدة.');
   }
   return { ok: errors.length === 0, item, errors };
 }
@@ -145,6 +162,7 @@ function canTransition(from, to) {
 }
 
 module.exports = {
+  SKILLS: taxonomy.SKILLS, SKILL_IDS: taxonomy.SKILL_IDS,
   SECTIONS, DIFFICULTIES, STATUSES, ORIGINS, AUTHOR_KINDS, CATEGORIES, ANSWER_LETTERS,
   TEMPLATE_COLUMNS, LIMITS, normalizeText, fingerprint, parseAnswer, validateItem,
   fromTemplateRow, isBlankRow, canTransition, TRANSITIONS,

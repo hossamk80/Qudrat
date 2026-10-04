@@ -88,6 +88,10 @@ function openDb(dataDir) {
       id TEXT PRIMARY KEY,
       section TEXT NOT NULL,
       category TEXT NOT NULL,
+      -- skill_id is the measurable unit, from the closed list in server/taxonomy.js.
+      -- skill keeps whatever descriptive label the question arrived with: editorial
+      -- information worth keeping, but never a unit of measurement.
+      skill_id TEXT NOT NULL DEFAULT '',
       skill TEXT NOT NULL DEFAULT '',
       difficulty TEXT NOT NULL,
       text TEXT NOT NULL,
@@ -128,6 +132,11 @@ function openDb(dataDir) {
   // Migration for databases created before responses existed.
   const cols = db.prepare('PRAGMA table_info(progress)').all().map(c => c.name);
   if (!cols.includes('ingested_len')) db.exec('ALTER TABLE progress ADD COLUMN ingested_len INTEGER NOT NULL DEFAULT 0');
+  const itemCols = db.prepare('PRAGMA table_info(items)').all().map(c => c.name);
+  if (itemCols.length && !itemCols.includes('skill_id')) {
+    db.exec("ALTER TABLE items ADD COLUMN skill_id TEXT NOT NULL DEFAULT ''");
+  }
+  db.exec('CREATE INDEX IF NOT EXISTS items_skill ON items(skill_id)');
   return db;
 }
 

@@ -5,10 +5,12 @@
 //   node server/cli.js list
 //   node server/cli.js backup <file>
 //   node server/cli.js migrate-bank [--dry-run]
+//   node server/cli.js backfill-skills
+//   node server/cli.js skills
 const path = require('node:path');
 const { openDb } = require('./db');
 const { hashPassword, loadConfig } = require('./server');
-const { migrateBank } = require('./migrate-bank');
+const { migrateBank, backfillSkillIds } = require('./migrate-bank');
 
 (async () => {
   const [cmd, a, b] = process.argv.slice(2);
@@ -49,8 +51,26 @@ const { migrateBank } = require('./migrate-bank');
       for (const x of r.invalid) console.log(`    ${x.id}: ${x.errors.join(' | ')}`);
       process.exitCode = 1;   // a bank that no longer validates is a failure, not a warning
     }
+  } else if (cmd === 'backfill-skills') {
+    const r = backfillSkillIds(db);
+    console.log(`examined ${r.examined} items without a skill, filled ${r.filled}`);
+    if (r.unresolved.length) { console.log('unresolved:', r.unresolved.join(', ')); process.exitCode = 1; }
+  } else if (cmd === 'skills') {
+    const { SKILLS } = require('./taxonomy');
+    const counts = Object.fromEntries(db.prepare(
+      "SELECT skill_id, COUNT(*) AS n FROM items WHERE status = 'live' GROUP BY skill_id").all()
+      .map(r => [r.skill_id, r.n]));
+    let thin = 0;
+    for (const sk of SKILLS) {
+      const n = counts[sk.id] || 0;
+      if (n < 25) thin++;
+      console.log(`${n < 25 ? '!' : ' '} ${String(n).padStart(4)}  ${sk.id.padEnd(14)} ${sk.label}`);
+    }
+    const missing = Object.keys(counts).filter(id => id && !SKILLS.some(s => s.id === id));
+    if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
+    console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run]');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | skills');
   }
   db.close();
 })();

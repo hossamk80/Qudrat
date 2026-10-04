@@ -16,9 +16,9 @@ function migrateBank(db, bank, { dryRun = false, now = () => new Date().toISOStr
   if (!questions) throw Error('bank.questions is missing or not an array');
 
   const insert = db.prepare(`INSERT INTO items
-    (id, section, category, skill, difficulty, text, options, answer, explanation, source,
+    (id, section, category, skill_id, skill, difficulty, text, options, answer, explanation, source,
      review, fingerprint, origin, author_kind, author_model, status, created_at, updated_at, reviewed_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'legacy', 'human', '', 'live', ?, ?, ?)`);
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'legacy', 'human', '', 'live', ?, ?, ?)`);
   const byId = db.prepare('SELECT id FROM items WHERE id = ?');
   const byPrint = db.prepare('SELECT id FROM items WHERE fingerprint = ?');
 
@@ -45,7 +45,7 @@ function migrateBank(db, bank, { dryRun = false, now = () => new Date().toISOStr
 
     if (byId.get(item.id) || byPrint.get(print)) { report.skipped++; continue; }
     const at = q.review && q.review.date ? String(q.review.date) : now();
-    rows.push([item.id, item.section, item.category, item.skill, item.difficulty, item.text,
+    rows.push([item.id, item.section, item.category, item.skillId, item.skill, item.difficulty, item.text,
       JSON.stringify(item.options), item.answer, item.explanation, item.source,
       q.review ? JSON.stringify(q.review) : '', print, now(), now(), at]);
   }
@@ -62,4 +62,24 @@ function migrateBank(db, bank, { dryRun = false, now = () => new Date().toISOStr
   return report;
 }
 
-module.exports = { migrateBank };
+// Fills skill_id on rows migrated before the taxonomy existed. Safe to re-run: it only
+// touches rows whose skill_id is still empty.
+function backfillSkillIds(db) {
+  const taxonomy = require('./taxonomy');
+  const rows = db.prepare("SELECT id, category, skill FROM items WHERE skill_id = ''").all();
+  const update = db.prepare('UPDATE items SET skill_id = ? WHERE id = ?');
+  const report = { examined: rows.length, filled: 0, unresolved: [] };
+  db.exec('BEGIN');
+  try {
+    for (const r of rows) {
+      const id = taxonomy.classify(r);
+      if (!id) { report.unresolved.push(r.id); continue; }
+      update.run(id, r.id);
+      report.filled++;
+    }
+    db.exec('COMMIT');
+  } catch (err) { db.exec('ROLLBACK'); throw err; }
+  return report;
+}
+
+module.exports = { migrateBank, backfillSkillIds };

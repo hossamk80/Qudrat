@@ -8,7 +8,7 @@
   const $ = sel => main.querySelector(sel);
   const STATUS_LABEL = { draft: 'مسوّدة', reviewed: 'مراجَع', live: 'منشور', retired: 'مسحوب' };
   const KIND_LABEL = { human: 'بشري', ai: 'آلي' };
-  let meta = null, tab = 'manual', list = [], filters = { status: '', section: '', q: '' };
+  let meta = null, tab = 'manual', list = [], filters = { status: '', section: '', skill: '', q: '' };
 
   async function api(method, url, body) {
     const r = await fetch(url, {
@@ -68,6 +68,12 @@
   }
 
   // ---------- shared form pieces ----------
+  const skillSelect = (section, value) => {
+    const list = meta.skills.filter(sk => sk.section === section);
+    return `<select id="skillId"><option value="">— استنتجها من التصنيف —</option>${
+      list.map(sk => `<option value="${esc(sk.id)}"${sk.id === value ? ' selected' : ''}>${esc(sk.label)} (${sk.live})</option>`).join('')}</select>`;
+  };
+
   const sel = (id, options, value, blank) => `<select id="${id}">${blank ? `<option value="">${esc(blank)}</option>` : ''}${
     options.map(o => `<option value="${esc(o)}"${o === value ? ' selected' : ''}>${esc(o)}</option>`).join('')}</select>`;
 
@@ -92,7 +98,10 @@
         <p><label for="section">القسم</label>${sel('section', meta.sections, meta.sections[0])}</p>
         <p><label for="category">التصنيف</label>${sel('category', cats, cats[0])}</p>
         <p><label for="difficulty">الصعوبة</label>${sel('difficulty', meta.difficulties, meta.difficulties[1])}</p>
-        <p><label for="skill">المهارة (اختياري)</label><input id="skill" autocomplete="off"></p>
+        <p><label for="skillId">المهارة</label>${skillSelect(meta.sections[0])}
+          <span class="muted" id="skill-hint"></span></p>
+        <p><label for="skill">وصف تحريري للمهارة (اختياري)</label><input id="skill" autocomplete="off"
+          placeholder="لا يُستخدم في القياس؛ للتوثيق فقط"></p>
         <p><label for="text">نص السؤال</label><textarea id="text" rows="4"></textarea></p>
         ${meta.answerLetters.map((l, i) => `<p><label for="opt${i}">الخيار ${esc(l)}</label><input id="opt${i}" autocomplete="off"></p>`).join('')}
         <p><label for="answer">الإجابة الصحيحة</label>${sel('answer', meta.answerLetters, meta.answerLetters[0])}</p>
@@ -104,17 +113,29 @@
   }
 
   function wireManual() {
-    $('#section').onchange = () => {
-      const cats = meta.categories[$('#section').value] || [];
-      $('#category').innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+    const hint = () => {
+      const sk = meta.skills.find(x => x.id === $('#skillId').value);
+      $('#skill-hint').textContent = sk
+        ? `${sk.live} سؤالًا منشورًا في هذه المهارة.`
+        : 'ستُستنتج المهارة من التصنيف إن تركتها.';
     };
+    $('#section').onchange = () => {
+      const section = $('#section').value;
+      const cats = meta.categories[section] || [];
+      $('#category').innerHTML = cats.map(c => `<option value="${esc(c)}">${esc(c)}</option>`).join('');
+      $('#skillId').outerHTML = skillSelect(section);
+      $('#skillId').onchange = hint;
+      hint();
+    };
+    $('#skillId').onchange = hint;
+    hint();
     $('#manual').onsubmit = async e => {
       e.preventDefault();
       const out = $('#manual-out');
       out.innerHTML = '<p>جارٍ الحفظ…</p>';
       const r = await api('POST', 'api/admin/items', {
         section: $('#section').value, category: $('#category').value, difficulty: $('#difficulty').value,
-        skill: $('#skill').value, text: $('#text').value,
+        skillId: $('#skillId').value, skill: $('#skill').value, text: $('#text').value,
         options: [0, 1, 2, 3].map(i => $('#opt' + i).value),
         answer: $('#answer').value, explanation: $('#explanation').value, source: $('#source').value,
         origin: 'manual', ...authorPayload(),
@@ -172,7 +193,9 @@
       const next = (meta.transitions[it.status] || []).map(s =>
         `<button data-id="${esc(it.id)}" data-to="${s}">${esc(STATUS_LABEL[s])}</button>`).join(' ');
       return `<tr><td><code>${esc(it.id)}</code></td><td>${esc(STATUS_LABEL[it.status] || it.status)}</td>
-        <td>${esc(it.section)} · ${esc(it.category)}</td><td>${esc(it.difficulty)}</td>
+        <td>${esc(it.section)} · ${esc(it.category)}</td>
+        <td>${esc((meta.skills.find(sk => sk.id === it.skillId) || {}).label || '—')}</td>
+        <td>${esc(it.difficulty)}</td>
         <td dir="auto">${esc(it.text.slice(0, 90))}${it.text.length > 90 ? '…' : ''}</td>
         <td>${esc(KIND_LABEL[it.authorKind] || it.authorKind)}${it.authorModel ? ' · ' + esc(it.authorModel) : ''}</td>
         <td>${it.explanation ? '✓' : '—'}</td><td>${next || '—'}</td></tr>`;
@@ -180,17 +203,23 @@
     return `<section class="auth-card" style="max-width:min(1200px,96vw)"><h1>قائمة الأسئلة</h1>
       <p><label for="f-status">الحالة</label>${sel('f-status', meta.statuses.map(s => s), filters.status, 'الكل')}
          <label for="f-section">القسم</label>${sel('f-section', meta.sections, filters.section, 'الكل')}
+         <label for="f-skill">المهارة</label>${(() => {
+           const list = filters.section ? meta.skills.filter(sk => sk.section === filters.section) : meta.skills;
+           return `<select id="f-skill"><option value="">الكل</option>${list.map(sk =>
+             `<option value="${esc(sk.id)}"${sk.id === filters.skill ? ' selected' : ''}>${esc(sk.label)} (${sk.live})</option>`).join('')}</select>`;
+         })()}
          <label for="f-q">بحث</label><input id="f-q" value="${esc(filters.q)}" autocomplete="off"></p>
-      <div class="admin-table"><table><thead><tr><th>المعرف</th><th>الحالة</th><th>القسم والتصنيف</th>
+      <div class="admin-table"><table><thead><tr><th>المعرف</th><th>الحالة</th><th>القسم والتصنيف</th><th>المهارة</th>
         <th>الصعوبة</th><th>السؤال</th><th>المؤلّف</th><th>شرح</th><th>نقل إلى</th></tr></thead>
-        <tbody>${rows || '<tr><td colspan="8">لا نتائج.</td></tr>'}</tbody></table></div>
+        <tbody>${rows || '<tr><td colspan="9">لا نتائج.</td></tr>'}</tbody></table></div>
       <div id="queue-out" role="status"></div></section>`;
   }
 
   function wireQueue() {
     const reload = async () => { await loadList(); render(); };
     $('#f-status').onchange = e => { filters.status = e.target.value; reload(); };
-    $('#f-section').onchange = e => { filters.section = e.target.value; reload(); };
+    $('#f-section').onchange = e => { filters.section = e.target.value; filters.skill = ''; reload(); };
+    $('#f-skill').onchange = e => { filters.skill = e.target.value; reload(); };
     let timer;
     $('#f-q').oninput = e => { filters.q = e.target.value; clearTimeout(timer); timer = setTimeout(reload, 300); };
     main.querySelectorAll('tbody button').forEach(b => {
@@ -226,6 +255,7 @@
     const p = new URLSearchParams();
     if (filters.status) p.set('status', filters.status);
     if (filters.section) p.set('section', filters.section);
+    if (filters.skill) p.set('skill', filters.skill);
     if (filters.q) p.set('q', filters.q);
     p.set('limit', '200');
     const r = await api('GET', 'api/admin/items?' + p);
@@ -233,7 +263,7 @@
   }
   async function refreshCounts() {
     const r = await api('GET', 'api/admin/items/meta');
-    if (r.status === 200) meta.counts = r.data.counts;
+    if (r.status === 200) { meta.counts = r.data.counts; meta.skills = r.data.skills; }
   }
 
   (async () => {

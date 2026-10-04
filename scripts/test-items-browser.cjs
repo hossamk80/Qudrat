@@ -79,6 +79,14 @@ const assert = require('assert'), fs = require('fs'), os = require('os'), path =
   await page.selectOption('#answer', 'أ');
   await page.fill('#explanation', 'العلاقة أداة وما تقيسه: الميزان يحدّد الوزن.');
   await page.fill('#source', 'تأليف أصلي');
+  // the skill list follows the section and shows how many live items stand behind each one
+  const skillOptions = await page.$$eval('#skillId option', os => os.map(o => o.textContent));
+  assert(skillOptions.length > 1, 'the skill picker is populated');
+  assert(skillOptions.slice(1).every(t => /الاستيعاب|التناظر|إكمال|الخطأ|الارتباط/.test(t)),
+    'only verbal skills are offered on a verbal question: ' + JSON.stringify(skillOptions.slice(0, 4)));
+  assert(skillOptions.some(t => /\(\d+\)/.test(t)), 'each skill shows its live count');
+  await page.selectOption('#skillId', 'VA-SEMANTIC');
+  await page.waitForFunction(() => /سؤالًا منشورًا/.test(document.getElementById('skill-hint')?.textContent || ''));
   // choosing the AI author without naming a model must be refused by the server
   await page.check('input[name=kind][value=ai]');
   await page.click('#manual button[type=submit]');
@@ -93,6 +101,7 @@ const assert = require('assert'), fs = require('fs'), os = require('os'), path =
   assert.equal(ai.status, 'draft');
   assert.equal(ai.section, 'لفظي');
   assert.equal(ai.category, 'التناظر اللفظي', 'the category list followed the section');
+  assert.equal(ai.skill_id, 'VA-SEMANTIC', 'the chosen skill was stored');
 
   // the form cleared its stem so the next question starts fresh
   assert.equal(await page.inputValue('#text'), '');
