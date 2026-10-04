@@ -40,7 +40,47 @@ function openDb(dataDir) {
       updated_at TEXT NOT NULL,
       summary TEXT
     );
+
+    -- One row per answered item: the grain every report, calibration and adaptive
+    -- decision needs. Derived from the workspace snapshot on each save, so it also
+    -- back-fills the history students accumulated before this table existed.
+    -- exam_id is '' rather than NULL for practice so the UNIQUE index can dedupe:
+    -- SQLite treats NULLs as distinct, and every save resends the whole history.
+    CREATE TABLE IF NOT EXISTS responses (
+      id INTEGER PRIMARY KEY,
+      user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      item_id TEXT NOT NULL,
+      section TEXT NOT NULL DEFAULT '',
+      category TEXT NOT NULL DEFAULT '',
+      exam_id TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL,
+      correct INTEGER NOT NULL,
+      chosen INTEGER,
+      ms_spent INTEGER,
+      answered_at TEXT NOT NULL,
+      ingested_at TEXT NOT NULL,
+      UNIQUE (user_id, item_id, exam_id, answered_at)
+    );
+    CREATE INDEX IF NOT EXISTS responses_item ON responses(item_id);
+    CREATE INDEX IF NOT EXISTS responses_user_time ON responses(user_id, answered_at);
+
+    -- Administrative actions are irreversible for the student, so they leave a trail.
+    -- No foreign keys: the record must outlive the accounts it refers to.
+    CREATE TABLE IF NOT EXISTS admin_audit (
+      id INTEGER PRIMARY KEY,
+      actor_id INTEGER,
+      actor_email TEXT NOT NULL DEFAULT '',
+      action TEXT NOT NULL,
+      target_id INTEGER,
+      target_email TEXT NOT NULL DEFAULT '',
+      ip TEXT NOT NULL DEFAULT '',
+      at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS admin_audit_at ON admin_audit(at);
   `);
+  // Migration for databases created before responses existed.
+  const cols = db.prepare('PRAGMA table_info(progress)').all().map(c => c.name);
+  if (!cols.includes('ingested_len')) db.exec('ALTER TABLE progress ADD COLUMN ingested_len INTEGER NOT NULL DEFAULT 0');
   return db;
 }
 

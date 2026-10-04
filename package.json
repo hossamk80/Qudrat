@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/server.js",
-    "test": "node scripts/test-server.cjs && node scripts/test-site.cjs && node scripts/test-learning.cjs && node scripts/test-reliability.cjs && node scripts/test-qiyas.cjs",
+    "test": "node scripts/test-server.cjs && node scripts/test-site.cjs && node scripts/test-learning.cjs && node scripts/test-reliability.cjs && node scripts/test-qiyas.cjs && node scripts/test-analytics.cjs",
     "test:browser": "node scripts/test-browser.cjs"
   }
 }

@@ -89,6 +89,36 @@ function summarize(raw) {
   } catch { return null; }
 }
 
+// Turn the workspace snapshot's answer log into one row per answered item.
+// Every save resends the whole history, so ingestion must be idempotent: the UNIQUE
+// index absorbs repeats and `from` skips the prefix already stored. A history that
+// shrank (a reset, or a restored backup) is replayed from the start.
+function historyRows(raw, from) {
+  let d;
+  try { d = JSON.parse(raw); } catch { return { rows: [], len: 0 }; }
+  const history = Array.isArray(d.history) ? d.history : [];
+  const start = history.length >= from ? from : 0;
+  const rows = [];
+  for (const h of history.slice(start)) {
+    if (!h || typeof h.id !== 'string' || typeof h.at !== 'string') continue;
+    const status = h.status === 'blank' || h.status === 'wrong' || h.status === 'correct'
+      ? h.status
+      : (h.correct === true ? 'correct' : 'wrong');
+    rows.push({
+      itemId: h.id.slice(0, 64),
+      section: typeof h.section === 'string' ? h.section.slice(0, 40) : '',
+      category: typeof h.category === 'string' ? h.category.slice(0, 60) : '',
+      examId: typeof h.examId === 'string' ? h.examId.slice(0, 64) : '',
+      status,
+      correct: h.correct === true ? 1 : 0,
+      chosen: Number.isInteger(h.chosen) && h.chosen >= 0 && h.chosen < 4 ? h.chosen : null,
+      msSpent: Number.isInteger(h.ms) && h.ms >= 0 && h.ms < 36e5 ? h.ms : null,
+      answeredAt: h.at.slice(0, 40),
+    });
+  }
+  return { rows, len: history.length };
+}
+
 // ---------- static files ----------
 const TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -163,6 +193,10 @@ function parseCookies(header) {
 function createServer(config = loadConfig()) {
   const db = openDb(config.dataDir);
   const loginLimit = limiter(20, 15 * 60 * 1000);
+  // Keyed by IP alone, one account can be hammered from many addresses while a whole
+  // school behind one address locks itself out. Both keys are checked, each with its
+  // own budget: the account key is the tighter one.
+  const loginEmailLimit = limiter(8, 15 * 60 * 1000);
   const registerLimit = limiter(10, 60 * 60 * 1000);
   const q = {
     userByEmail: db.prepare('SELECT * FROM users WHERE email = ?'),
@@ -182,6 +216,13 @@ function createServer(config = loadConfig()) {
     setDisabled: db.prepare('UPDATE users SET disabled = ? WHERE id = ?'),
     setPassword: db.prepare('UPDATE users SET pass_hash = ? WHERE id = ?'),
     count: db.prepare('SELECT COUNT(*) AS n FROM users'),
+    insertResponse: db.prepare(`INSERT OR IGNORE INTO responses
+      (user_id, item_id, section, category, exam_id, status, correct, chosen, ms_spent, answered_at, ingested_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`),
+    setIngested: db.prepare('UPDATE progress SET ingested_len = ? WHERE user_id = ?'),
+    ingested: db.prepare('SELECT ingested_len FROM progress WHERE user_id = ?'),
+    insertAudit: db.prepare(`INSERT INTO admin_audit
+      (actor_id, actor_email, action, target_id, target_email, ip, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   };
   q.purgeSessions.run(now());
 
@@ -200,6 +241,36 @@ function createServer(config = loadConfig()) {
     q.touchLogin.run(now(), user.id);
     return cookie(req, token, SESSION_DAYS * 86400);
   }
+  // Writes the answer rows for a saved snapshot. Analytics must never cost a student
+  // their save, so a failure here is logged and swallowed: progress is already stored.
+  function ingest(userId, data) {
+    try {
+      const from = q.ingested.get(userId)?.ingested_len ?? 0;
+      const { rows, len } = historyRows(data, from);
+      if (rows.length) {
+        const at = now();
+        db.exec('BEGIN');
+        try {
+          for (const r of rows) {
+            q.insertResponse.run(userId, r.itemId, r.section, r.category, r.examId,
+              r.status, r.correct, r.chosen, r.msSpent, r.answeredAt, at);
+          }
+          db.exec('COMMIT');
+        } catch (e) { db.exec('ROLLBACK'); throw e; }
+      }
+      if (len !== from) q.setIngested.run(len, userId);
+    } catch (err) {
+      console.error('response ingestion failed for user', userId, err.message);
+    }
+  }
+
+  function audit(req, actor, action, target) {
+    try {
+      q.insertAudit.run(actor?.id ?? null, actor?.email ?? '', action,
+        target?.id ?? null, target?.email ?? '', clientIp(req), now());
+    } catch (err) { console.error('audit write failed:', err.message); }
+  }
+
   function currentUser(req) {
     const token = parseCookies(req.headers.cookie)[SESSION_COOKIE];
     if (!token) return null;
@@ -253,7 +324,9 @@ function createServer(config = loadConfig()) {
     'POST /api/login': async (req, res) => {
       if (!loginLimit(clientIp(req))) return json(res, 429, { error: 'محاولات كثيرة. حاول بعد ربع ساعة.' });
       const { email, password } = await body(req);
-      const user = q.userByEmail.get(String(email || '').trim().toLowerCase());
+      const mail = String(email || '').trim().toLowerCase();
+      if (mail && !loginEmailLimit(mail)) return json(res, 429, { error: 'محاولات كثيرة على هذا الحساب. حاول بعد ربع ساعة.' });
+      const user = q.userByEmail.get(mail);
       const ok = await verifyPassword(String(password || ''), user ? user.pass_hash : DUMMY_HASH);
       if (!user || !ok) return json(res, 401, { error: 'البريد أو كلمة المرور غير صحيحة.' });
       if (user.disabled) return json(res, 403, { error: 'هذا الحساب موقوف. تواصل مع الإدارة.' });
@@ -292,10 +365,12 @@ function createServer(config = loadConfig()) {
       if (!current) {
         if (rev !== 0) return json(res, 409, { error: 'conflict', rev: 0 });
         q.insertProgress.run(u.id, data, now(), summary);
+        ingest(u.id, data);
         return json(res, 200, { rev: 1 });
       }
       const r = q.updateProgress.run(data, now(), summary, u.id, rev);
       if (r.changes !== 1) return json(res, 409, { error: 'conflict', rev: current.rev });
+      ingest(u.id, data);
       json(res, 200, { rev: rev + 1 });
     },
 
@@ -316,12 +391,16 @@ function createServer(config = loadConfig()) {
       if (action === 'disable' || action === 'enable') {
         q.setDisabled.run(action === 'disable' ? 1 : 0, target.id);
         if (action === 'disable') q.deleteUserSessions.run(target.id);
+        audit(req, u, action, target);
         return json(res, 200, { ok: true });
       }
       if (action === 'reset-password') {
-        const temp = crypto.randomBytes(6).toString('base64url');
+        // 12 bytes, not 6: this password is handed over out of band and may sit in a
+        // chat log until it is used, so it needs more than 48 bits behind it.
+        const temp = crypto.randomBytes(12).toString('base64url');
         q.setPassword.run(await hashPassword(temp), target.id);
         q.deleteUserSessions.run(target.id);
+        audit(req, u, 'reset-password', target);
         return json(res, 200, { ok: true, password: temp });
       }
       json(res, 400, { error: 'unknown action' });
