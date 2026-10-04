@@ -7,6 +7,7 @@
 //   node server/cli.js migrate-bank [--dry-run]
 //   node server/cli.js backfill-skills
 //   node server/cli.js split-passages
+//   node server/cli.js import-items <file.json> [--model <name>]
 //   node server/cli.js skills
 const path = require('node:path');
 const { openDb } = require('./db');
@@ -61,6 +62,20 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     console.log(`examined ${r.examined} reading items with an inline passage`);
     console.log(`  split: ${r.split}, new passages: ${r.passages}`);
     if (r.unsplit.length) { console.log('  no passage found in:', r.unsplit.join(', ')); process.exitCode = 1; }
+  } else if (cmd === 'import-items') {
+    // Goes through the same gateway an upload does: the shared validator, the duplicate
+    // fingerprint, the passage table, and draft as the only landing state. Authored by a
+    // model, so author_kind is 'ai' and nothing here can publish — a human reviews first.
+    if (!a) { console.error('Usage: import-items <file.json> [--model <name>]'); process.exit(1); }
+    const flag = process.argv.indexOf('--model');
+    const model = flag > -1 ? String(process.argv[flag + 1] || '') : 'claude-opus-5';
+    if (!model) { console.error('--model needs a name: an AI-authored item records what wrote it.'); process.exit(1); }
+    const { items: list } = JSON.parse(require('node:fs').readFileSync(path.resolve(a), 'utf8'));
+    const { importItems } = require('./import-items');
+    const r = importItems(db, list, { authorModel: model });
+    console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
+    for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}: ${(x.errors || []).join(' | ')}`);
+    if (r.rejected) process.exitCode = 1;
   } else if (cmd === 'skills') {
     const { SKILLS } = require('./taxonomy');
     const counts = Object.fromEntries(db.prepare(
@@ -76,7 +91,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | skills');
   }
   db.close();
 })();

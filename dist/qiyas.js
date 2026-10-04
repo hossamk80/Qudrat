@@ -38,9 +38,34 @@ function apportion(total, weights) {
 // Reading items repeat their passage in the text; the passage is the part before the question line.
 function passageKey(q) {
   if (q.group) return 'g:' + q.group;
+  // The server bank gives each passage a row and each question a reference to it, which is a
+  // surer key than the text: two questions on one passage share the id even if the text is
+  // later corrected. The text fallback keeps the bundled bank working unchanged.
+  if (q.passageId) return 'P:' + q.passageId;
   const i = q.text.lastIndexOf('\n\n');
   return i > 0 ? 'p:' + q.text.slice(0, i).trim() : 'q:' + q.id;
 }
+
+// Where the question on screen sits inside its run of questions on one passage. The exam shows
+// one question at a time, so without this the student cannot tell that the passage above is the
+// one they just read, and re-reads it four times.
+function passageGroup() {
+  if (typeof exam !== 'object' || !exam || !Array.isArray(exam.qs)) return null;
+  const at = exam.index;
+  const here = exam.qs[at];
+  if (!here) return null;
+  const key = passageKey(here);
+  if (key.startsWith('q:')) return null;
+  let first = at, last = at;
+  while (first > 0 && passageKey(exam.qs[first - 1]) === key) first--;
+  while (last < exam.qs.length - 1 && passageKey(exam.qs[last + 1]) === key) last++;
+  const total = last - first + 1;
+  return total > 1 ? { key, pos: at - first + 1, total } : null;
+}
+
+// Re-rendering the passage resets its scroll box, which throws the student back to the top of a
+// passage they are midway through. Remembered per passage, restored while the group lasts.
+const passageScroll = new Map();
 
 function seenOrder() {
   const seen = new Map();
@@ -248,9 +273,22 @@ function enhanceQuestionText(el) {
     html = (intro ? `<p class="q-lead">${esc(intro)}</p>` : '') +
       `<div class="table-wrap"><table class="q-table"><thead><tr>${cells[0].map(c => `<th>${c}</th>`).join('')}</tr></thead><tbody>${cells.slice(1).map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
   } else {
-    html = `<div class="q-passage">${esc(lead.replace(/^النص:\s*/, ''))}</div>`;
+    const group = passageGroup();
+    const caption = group
+      ? `<p class="q-group">${group.pos === 1
+          ? `نص جديد · ${group.total} أسئلة عليه`
+          : `النص نفسه · السؤال ${group.pos} من ${group.total} عليه`}</p>`
+      : '';
+    html = caption + `<div class="q-passage"${group ? ` data-passage="${esc(group.key)}"` : ''}>${esc(lead.replace(/^النص:\s*/, ''))}</div>`;
   }
   el.innerHTML = html + `<p class="q-ask">${esc(ask)}</p>`;
+  const box = el.querySelector('.q-passage[data-passage]');
+  if (box) {
+    const key = box.dataset.passage;
+    const keep = passageScroll.get(key);
+    if (keep) box.scrollTop = keep;
+    box.addEventListener('scroll', () => passageScroll.set(key, box.scrollTop), { passive: true });
+  }
 }
 if (typeof MutationObserver === 'function' && document.getElementById?.('main')) {
   const main = document.getElementById('main');
