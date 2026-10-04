@@ -91,6 +91,11 @@ function openDb(dataDir) {
       -- skill_id is the measurable unit, from the closed list in server/taxonomy.js.
       -- skill keeps whatever descriptive label the question arrived with: editorial
       -- information worth keeping, but never a unit of measurement.
+      -- NULL for every category but استيعاب المقروء, not the empty string: SQLite skips a
+      -- foreign key check on NULL, and '' would be looked up as a real passage id. No ON
+      -- DELETE action either — a passage with questions on it must not be removable out
+      -- from under them, which the server enforces by refusing the delete.
+      passage_id TEXT REFERENCES passages(id),
       skill_id TEXT NOT NULL DEFAULT '',
       skill TEXT NOT NULL DEFAULT '',
       difficulty TEXT NOT NULL,
@@ -128,6 +133,20 @@ function openDb(dataDir) {
       at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS item_revisions_item ON item_revisions(item_id, id);
+
+    -- Reading passages, one row each. The bank held every passage inside each of its three
+    -- to five questions: 56 passages written out 254 times, so a correction had to be made
+    -- five times and the student saw the passage re-rendered per question instead of once
+    -- with its questions under it, which is not how the real test reads.
+    CREATE TABLE IF NOT EXISTS passages (
+      id TEXT PRIMARY KEY,
+      text TEXT NOT NULL,
+      fingerprint TEXT NOT NULL UNIQUE,
+      words INTEGER NOT NULL DEFAULT 0,
+      created_by INTEGER,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    );
   `);
   // Migration for databases created before responses existed.
   const cols = db.prepare('PRAGMA table_info(progress)').all().map(c => c.name);
@@ -136,7 +155,11 @@ function openDb(dataDir) {
   if (itemCols.length && !itemCols.includes('skill_id')) {
     db.exec("ALTER TABLE items ADD COLUMN skill_id TEXT NOT NULL DEFAULT ''");
   }
+  if (itemCols.length && !itemCols.includes('passage_id')) {
+    db.exec('ALTER TABLE items ADD COLUMN passage_id TEXT REFERENCES passages(id)');
+  }
   db.exec('CREATE INDEX IF NOT EXISTS items_skill ON items(skill_id)');
+  db.exec('CREATE INDEX IF NOT EXISTS items_passage ON items(passage_id)');
   return db;
 }
 

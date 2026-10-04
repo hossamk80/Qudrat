@@ -9,6 +9,7 @@ const zlib = require('node:zlib');
 const { promisify } = require('node:util');
 const { openDb } = require('./db');
 const items = require('./items');
+const crypto2 = require('node:crypto');
 
 // Read .env from the project folder however the server is started (npm start, the .bat, or node directly).
 // Variables already set in the environment win over the file.
@@ -225,10 +226,10 @@ function createServer(config = loadConfig()) {
     insertAudit: db.prepare(`INSERT INTO admin_audit
       (actor_id, actor_email, action, target_id, target_email, ip, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
     insertItem: db.prepare(`INSERT INTO items
-      (id, section, category, skill_id, skill, difficulty, text, options, answer, explanation, source,
-       fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`),
-    updateItem: db.prepare(`UPDATE items SET section = ?, category = ?, skill_id = ?, skill = ?, difficulty = ?,
+      (id, section, category, passage_id, skill_id, skill, difficulty, text, options, answer, explanation,
+       source, fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`),
+    updateItem: db.prepare(`UPDATE items SET section = ?, category = ?, passage_id = ?, skill_id = ?, skill = ?, difficulty = ?,
       text = ?, options = ?, answer = ?, explanation = ?, source = ?, fingerprint = ?, updated_at = ?
       WHERE id = ?`),
     itemById: db.prepare('SELECT * FROM items WHERE id = ?'),
@@ -237,6 +238,15 @@ function createServer(config = loadConfig()) {
       reviewed_by = CASE WHEN ? IN ('reviewed','live') THEN ? ELSE reviewed_by END,
       reviewed_at = CASE WHEN ? IN ('reviewed','live') THEN ? ELSE reviewed_at END WHERE id = ?`),
     itemCounts: db.prepare('SELECT status, COUNT(*) AS n FROM items GROUP BY status'),
+    insertPassage: db.prepare(`INSERT INTO passages (id, text, fingerprint, words, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)`),
+    passageById: db.prepare('SELECT * FROM passages WHERE id = ?'),
+    passageByPrint: db.prepare('SELECT id FROM passages WHERE fingerprint = ?'),
+    updatePassage: db.prepare('UPDATE passages SET text = ?, fingerprint = ?, words = ?, updated_at = ? WHERE id = ?'),
+    passageList: db.prepare(`SELECT p.*, COUNT(i.id) AS items,
+      SUM(CASE WHEN i.status = 'live' THEN 1 ELSE 0 END) AS live
+      FROM passages p LEFT JOIN items i ON i.passage_id = p.id GROUP BY p.id ORDER BY p.updated_at DESC`),
+    passageItems: db.prepare("SELECT id, text, status, skill_id, difficulty FROM items WHERE passage_id = ? ORDER BY id"),
     insertRevision: db.prepare(`INSERT INTO item_revisions
       (item_id, actor_id, actor_email, change, before, after, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   };
@@ -298,7 +308,8 @@ function createServer(config = loadConfig()) {
   };
 
   const itemRow = r => ({
-    id: r.id, section: r.section, category: r.category, skillId: r.skill_id, skill: r.skill, difficulty: r.difficulty,
+    id: r.id, section: r.section, category: r.category, passageId: r.passage_id || '',
+    skillId: r.skill_id, skill: r.skill, difficulty: r.difficulty,
     text: r.text, options: JSON.parse(r.options), answer: r.answer, explanation: r.explanation,
     source: r.source, origin: r.origin, authorKind: r.author_kind, authorModel: r.author_model,
     status: r.status, createdAt: r.created_at, updatedAt: r.updated_at, reviewedAt: r.reviewed_at,
@@ -311,18 +322,42 @@ function createServer(config = loadConfig()) {
     } catch (err) { console.error('item revision write failed:', err.message); }
   }
 
+  const passagePrint = text => crypto2.createHash('sha256').update(items.normalizeText(text)).digest('hex');
+  const words = text => text.split(/\s+/).filter(Boolean).length;
+
+  // Finds the passage this text already is, or stores it once. Two questions written for the
+  // same passage must land on one row, which is the whole point of the table.
+  function resolvePassage(actor, item) {
+    if (item.passageId) {
+      const row = q.passageById.get(item.passageId);
+      if (!row) return { error: `النص «${item.passageId}» غير موجود.` };
+      return { id: row.id, text: row.text };
+    }
+    if (!item.passageText) return { id: null, text: '' };
+    const print = passagePrint(item.passageText);
+    const found = q.passageByPrint.get(print);
+    if (found) return { id: found.id, text: item.passageText };
+    const id = 'P-' + print.slice(0, 10).toUpperCase();
+    const at = now();
+    q.insertPassage.run(id, item.passageText, print, words(item.passageText), actor?.id ?? null, at, at);
+    return { id, text: item.passageText, created: true };
+  }
+
   // The one place an item is created, whichever path brought it. Returns a per-row
   // outcome so a spreadsheet of 200 can report exactly which rows failed and why.
   function createItem(req, actor, raw, origin, authorKind, authorModel) {
     const { ok, item, errors } = items.validateItem(raw);
     if (!ok) return { ok: false, errors };
+    const passage = resolvePassage(actor, item);
+    if (passage.error) return { ok: false, errors: [passage.error] };
+    if (passage.text) item.passageText = passage.text;
     const print = items.fingerprint(item);
     const clash = q.itemByPrint.get(print);
     if (clash) return { ok: false, errors: [`مكرر: يطابق السؤال «${clash.id}» (${clash.status}).`], duplicateOf: clash.id };
     if (item.id && q.itemById.get(item.id)) return { ok: false, errors: [`المعرف «${item.id}» مستخدم مسبقًا.`] };
     const id = item.id || nextItemId(item.section, item.category);
     const at = now();
-    q.insertItem.run(id, item.section, item.category, item.skillId, item.skill, item.difficulty, item.text,
+    q.insertItem.run(id, item.section, item.category, passage.id, item.skillId, item.skill, item.difficulty, item.text,
       JSON.stringify(item.options), item.answer, item.explanation, item.source, print,
       origin, authorKind, authorModel, actor?.id ?? null, at, at);
     revise(req, actor, id, 'create', null, { ...item, id, origin, authorKind, authorModel });
@@ -437,6 +472,86 @@ function createServer(config = loadConfig()) {
     // gate: server/items.js validates all of them, the fingerprint rejects duplicates,
     // and everything lands as a draft regardless of who or what wrote it.
 
+    // ---------- reading passages ----------
+    // A passage is edited once and every question under it follows, which is the reason it
+    // has a row of its own instead of being retyped into each of its three to five questions.
+
+    'GET /api/admin/passages': (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const url = new URL(req.url, 'http://x');
+      const one = url.searchParams.get('id');
+      if (one) {
+        const row = q.passageById.get(one);
+        if (!row) return json(res, 404, { error: 'not found' });
+        return json(res, 200, {
+          passage: { id: row.id, text: row.text, words: row.words, updatedAt: row.updated_at },
+          items: q.passageItems.all(row.id).map(i => ({
+            id: i.id, text: i.text, status: i.status, skillId: i.skill_id, difficulty: i.difficulty })),
+        });
+      }
+      json(res, 200, { passages: q.passageList.all().map(p => ({
+        id: p.id, text: p.text, words: p.words, items: p.items, live: p.live || 0, updatedAt: p.updated_at })) });
+    },
+
+    'POST /api/admin/passages': async (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const { text } = await body(req, 64 * 1024);
+      const clean = String(text || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, items.LIMITS.passage);
+      if (clean.length < 40) return json(res, 422, { error: 'النص قصير جدًا ليكون نص استيعاب.' });
+      const print = passagePrint(clean);
+      const found = q.passageByPrint.get(print);
+      if (found) return json(res, 422, { error: `هذا النص موجود مسبقًا بالمعرف «${found.id}».`, duplicateOf: found.id });
+      const id = 'P-' + print.slice(0, 10).toUpperCase();
+      const at = now();
+      q.insertPassage.run(id, clean, print, words(clean), u.id, at, at);
+      audit(req, u, 'passage-create', null);
+      json(res, 201, { id, words: words(clean) });
+    },
+
+    // Editing the passage changes what every question under it is asked about, so each one's
+    // fingerprint is recomputed and any that were live go back to review.
+    'POST /api/admin/passages/update': async (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const { id, text } = await body(req, 64 * 1024);
+      const row = q.passageById.get(String(id || ''));
+      if (!row) return json(res, 404, { error: 'not found' });
+      const clean = String(text || '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, items.LIMITS.passage);
+      if (clean.length < 40) return json(res, 422, { error: 'النص قصير جدًا ليكون نص استيعاب.' });
+      const print = passagePrint(clean);
+      const clash = q.passageByPrint.get(print);
+      if (clash && clash.id !== row.id) return json(res, 422, { error: `يطابق النص «${clash.id}».`, duplicateOf: clash.id });
+      const affected = q.passageItems.all(row.id);
+      const at = now();
+      db.exec('BEGIN');
+      try {
+        q.updatePassage.run(clean, print, words(clean), at, row.id);
+        for (const it of affected) {
+          const full = q.itemById.get(it.id);
+          const next = items.fingerprint({ text: full.text, options: JSON.parse(full.options), passageText: clean });
+          db.prepare('UPDATE items SET fingerprint = ?, updated_at = ? WHERE id = ?').run(next, at, it.id);
+          if (full.status === 'live') q.setItemStatus.run('reviewed', at, 'reviewed', u.id, 'reviewed', at, it.id);
+        }
+        db.exec('COMMIT');
+      } catch (err) { db.exec('ROLLBACK'); throw err; }
+      for (const it of affected) revise(req, u, it.id, 'passage-update', { passage: row.text }, { passage: clean });
+      audit(req, u, `passage-update:${affected.length}`, null);
+      json(res, 200, { id: row.id, words: words(clean), affected: affected.length,
+        unpublished: affected.filter(i => i.status === 'live').length });
+    },
+
+    // A passage with questions on it cannot be removed out from under them.
+    'POST /api/admin/passages/delete': async (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const { id } = await body(req);
+      const row = q.passageById.get(String(id || ''));
+      if (!row) return json(res, 404, { error: 'not found' });
+      const used = q.passageItems.all(row.id);
+      if (used.length) return json(res, 409, { error: `النص مستخدم في ${used.length} سؤالًا؛ انقل أسئلته أو اسحبها أولًا.`, items: used.map(i => i.id) });
+      db.prepare('DELETE FROM passages WHERE id = ?').run(row.id);
+      audit(req, u, 'passage-delete', null);
+      json(res, 200, { ok: true });
+    },
+
     'GET /api/admin/items/meta': (req, res, u) => {
       if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
       const counts = Object.fromEntries(items.STATUSES.map(s => [s, 0]));
@@ -449,6 +564,8 @@ function createServer(config = loadConfig()) {
         statuses: items.STATUSES, answerLetters: items.ANSWER_LETTERS,
         templateColumns: items.TEMPLATE_COLUMNS, transitions: items.TRANSITIONS, counts,
         skills: items.SKILLS.map(sk => ({ ...sk, live: perSkill[sk.id] || 0 })),
+        passageCategory: items.PASSAGE_CATEGORY,
+        passages: db.prepare('SELECT COUNT(*) AS n FROM passages').get().n,
       });
     },
 
@@ -466,6 +583,8 @@ function createServer(config = loadConfig()) {
       if (search) { where.push('(text LIKE ? OR id LIKE ?)'); args.push('%' + search + '%', '%' + search + '%'); }
       const skill = url.searchParams.get('skill') || '';
       if (items.SKILL_IDS.has(skill)) { where.push('skill_id = ?'); args.push(skill); }
+      const passageId = url.searchParams.get('passage') || '';
+      if (passageId) { where.push('passage_id = ?'); args.push(passageId); }
       const sql = 'SELECT * FROM items' + (where.length ? ' WHERE ' + where.join(' AND ') : '')
         + ' ORDER BY updated_at DESC, id LIMIT ? OFFSET ?';
       const rows = db.prepare(sql).all(...args, limit, offset);
@@ -539,10 +658,13 @@ function createServer(config = loadConfig()) {
       if (!row) return json(res, 404, { error: 'not found' });
       const { ok, item, errors } = items.validateItem({ ...itemRow(row), ...payload, id: row.id });
       if (!ok) return json(res, 422, { error: errors[0], errors });
+      const passage = resolvePassage(u, item);
+      if (passage.error) return json(res, 422, { error: passage.error });
+      if (passage.text) item.passageText = passage.text;
       const print = items.fingerprint(item);
       const clash = q.itemByPrint.get(print);
       if (clash && clash.id !== row.id) return json(res, 422, { error: `مكرر: يطابق «${clash.id}».`, duplicateOf: clash.id });
-      q.updateItem.run(item.section, item.category, item.skillId, item.skill, item.difficulty, item.text,
+      q.updateItem.run(item.section, item.category, passage.id, item.skillId, item.skill, item.difficulty, item.text,
         JSON.stringify(item.options), item.answer, item.explanation, item.source, print, now(), row.id);
       // Editing a live question puts it back under review: students are reading it now.
       if (row.status === 'live') q.setItemStatus.run('reviewed', now(), 'reviewed', u.id, 'reviewed', now(), row.id);

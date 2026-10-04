@@ -120,10 +120,69 @@ const assert = require('assert'), fs = require('fs'), os = require('os'), path =
   assert.equal(db.prepare('SELECT status FROM items WHERE id = ?').get(ai.id).status, 'live',
     'a reviewed item publishes from the queue');
 
+  // ---------- passages: written once, edited once, questions hang off it ----------
+  await page.click('nav button[data-tab=passages]');
+  await page.waitForSelector('#new-passage');
+  const PASSAGE = 'القراءة المنتظمة لا تزيد المعرفة وحدها، بل تدرّب الذهن على متابعة فكرة طويلة حتى نهايتها، وهي مهارة يحتاجها كل اختبار.';
+  await page.fill('#newtext', PASSAGE);
+  await page.click('#new-passage button[type=submit]');
+  // The confirmation must survive the re-render that follows it, which is what the admin reads.
+  await page.waitForFunction(() => /أُضيف النص/.test(document.body.textContent || ''), { timeout: 10000 });
+  const pid = db.prepare('SELECT id FROM passages').get().id;
+  assert(pid, 'the passage reached the database');
+
+  // two questions on it, attached through the picker the reading category reveals
+  for (const [stem, opts] of [
+    ['ما الفكرة الرئيسة للنص؟', ['تدريب الذهن', 'حفظ الكلمات', 'سرعة القراءة', 'كثرة الكتب']],
+    ['ما معنى «متابعة» في النص؟', ['ملاحقة الفكرة', 'ترك الفكرة', 'تكرار الفكرة', 'اختصار الفكرة']],
+  ]) {
+    await page.click('nav button[data-tab=manual]');
+    await page.waitForSelector('#manual');
+    await page.selectOption('#section', 'لفظي');
+    await page.waitForFunction(() => document.getElementById('category')?.value === 'استيعاب المقروء');
+    // the passage picker appears only for the reading category
+    await page.waitForFunction(() => document.getElementById('passage-row') && !document.getElementById('passage-row').hidden);
+    await page.selectOption('#passageId', pid);
+    await page.fill('#text', stem);
+    for (const [i, v] of opts.entries()) await page.fill('#opt' + i, v);
+    await page.selectOption('#answer', 'أ');
+    await page.fill('#explanation', 'الإجابة مستنتجة من النص نفسه.');
+    await page.fill('#source', 'تأليف أصلي');
+    await page.check('input[name=kind][value=human]');
+    await page.click('#manual button[type=submit]');
+    await page.waitForFunction(() => /تم الحفظ كمسوّدة/.test(document.getElementById('manual-out')?.textContent || ''), { timeout: 10000 });
+  }
+  assert.equal(db.prepare('SELECT COUNT(*) AS n FROM passages').get().n, 1, 'two questions, one passage row');
+  const onPassage = db.prepare('SELECT id, text FROM items WHERE passage_id = ?').all(pid);
+  assert.equal(onPassage.length, 2);
+  assert(onPassage.every(i => !i.text.includes('النص:')), 'the stem alone was stored');
+
+  // switching to a quantitative category hides the picker again
+  await page.selectOption('#section', 'كمي');
+  await page.waitForFunction(() => document.getElementById('passage-row')?.hidden === true);
+
+  // one edit, both questions follow
+  await page.click('nav button[data-tab=passages]');
+  await page.waitForSelector(`[data-open="${pid}"]`);
+  await page.click(`[data-open="${pid}"]`);
+  await page.waitForSelector('#ptext');
+  assert.equal((await page.inputValue('#ptext')).trim(), PASSAGE, 'the stored passage is what is shown for editing');
+  const rows = await page.$$eval('tbody tr', rs => rs.length);
+  assert.equal(rows, 2, 'the passage lists its own questions');
+  await page.fill('#ptext', PASSAGE + ' وتظهر فائدتها أكثر عند طول النص.');
+  await page.click('#edit-passage button[type=submit]');
+  await page.waitForFunction(() => /تأثّر 2/.test(document.body.textContent || ''), { timeout: 10000 });
+  assert(db.prepare('SELECT text FROM passages WHERE id = ?').get(pid).text.endsWith('عند طول النص.'),
+    'the passage was changed in one place');
+  // a passage carrying questions offers no delete button
+  await page.click('#back');
+  await page.waitForSelector('[data-open]');
+  assert.equal(await page.$(`[data-del="${pid}"]`), null, 'a passage in use cannot be deleted from the page');
+
   assert.deepEqual(errors, [], 'no uncaught page errors');
   await browser.close();
   await new Promise(r => server.close(r));
   db.close();
   fs.rmSync(dataDir, { recursive: true, force: true });
-  console.log('PASS: intake page in a real browser — the shipped XLSX template parses and imports, a re-upload is refused as duplicate, the manual form enforces model provenance and follows section→category, and the queue walks draft→reviewed→live.');
+  console.log('PASS: intake page in a real browser — the shipped XLSX template parses and imports, a re-upload is refused as duplicate, the manual form enforces model provenance and follows section→category, the queue walks draft→reviewed→live, and a passage is written once, carries its own questions, and one edit reaches all of them.');
 })().catch(e => { console.error(e); process.exit(1); });

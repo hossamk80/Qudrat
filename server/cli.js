@@ -6,11 +6,12 @@
 //   node server/cli.js backup <file>
 //   node server/cli.js migrate-bank [--dry-run]
 //   node server/cli.js backfill-skills
+//   node server/cli.js split-passages
 //   node server/cli.js skills
 const path = require('node:path');
 const { openDb } = require('./db');
 const { hashPassword, loadConfig } = require('./server');
-const { migrateBank, backfillSkillIds } = require('./migrate-bank');
+const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank');
 
 (async () => {
   const [cmd, a, b] = process.argv.slice(2);
@@ -55,6 +56,11 @@ const { migrateBank, backfillSkillIds } = require('./migrate-bank');
     const r = backfillSkillIds(db);
     console.log(`examined ${r.examined} items without a skill, filled ${r.filled}`);
     if (r.unresolved.length) { console.log('unresolved:', r.unresolved.join(', ')); process.exitCode = 1; }
+  } else if (cmd === 'split-passages') {
+    const r = splitPassages(db);
+    console.log(`examined ${r.examined} reading items with an inline passage`);
+    console.log(`  split: ${r.split}, new passages: ${r.passages}`);
+    if (r.unsplit.length) { console.log('  no passage found in:', r.unsplit.join(', ')); process.exitCode = 1; }
   } else if (cmd === 'skills') {
     const { SKILLS } = require('./taxonomy');
     const counts = Object.fromEntries(db.prepare(
@@ -70,7 +76,7 @@ const { migrateBank, backfillSkillIds } = require('./migrate-bank');
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | skills');
   }
   db.close();
 })();

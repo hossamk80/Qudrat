@@ -6,9 +6,15 @@
   const main = document.getElementById('main');
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const $ = sel => main.querySelector(sel);
+  const noticeHtml = () => notice
+    ? `<p class="${notice.kind === 'error' ? 'auth-error' : ''}" role="status">${esc(notice.text)}</p>` : '';
   const STATUS_LABEL = { draft: 'مسوّدة', reviewed: 'مراجَع', live: 'منشور', retired: 'مسحوب' };
   const KIND_LABEL = { human: 'بشري', ai: 'آلي' };
-  let meta = null, tab = 'manual', list = [], filters = { status: '', section: '', skill: '', q: '' };
+  let meta = null, tab = 'manual', list = [], passages = [], openPassage = null;
+  let filters = { status: '', section: '', skill: '', q: '' };
+  // A message written straight into the DOM is wiped by the next render(), so anything the
+  // admin must still be able to read after a reload lives here and is rendered with the view.
+  let notice = null;   // { kind: 'ok' | 'error', text }
 
   async function api(method, url, body) {
     const r = await fetch(url, {
@@ -102,6 +108,8 @@
           <span class="muted" id="skill-hint"></span></p>
         <p><label for="skill">وصف تحريري للمهارة (اختياري)</label><input id="skill" autocomplete="off"
           placeholder="لا يُستخدم في القياس؛ للتوثيق فقط"></p>
+        <p id="passage-row" hidden><label for="passageId">النص</label><select id="passageId"></select>
+          <span class="muted">أضف النصوص من تبويب «النصوص».</span></p>
         <p><label for="text">نص السؤال</label><textarea id="text" rows="4"></textarea></p>
         ${meta.answerLetters.map((l, i) => `<p><label for="opt${i}">الخيار ${esc(l)}</label><input id="opt${i}" autocomplete="off"></p>`).join('')}
         <p><label for="answer">الإجابة الصحيحة</label>${sel('answer', meta.answerLetters, meta.answerLetters[0])}</p>
@@ -126,9 +134,21 @@
       $('#skillId').outerHTML = skillSelect(section);
       $('#skillId').onchange = hint;
       hint();
+      passageRow();
     };
     $('#skillId').onchange = hint;
     hint();
+    const passageRow = () => {
+      const isReading = $('#category').value === meta.passageCategory;
+      $('#passage-row').hidden = !isReading;
+      if (isReading) {
+        $('#passageId').innerHTML = passages.length
+          ? passages.map(p => `<option value="${esc(p.id)}">${esc(p.id)} — ${esc(p.text.slice(0, 50))}… (${p.items})</option>`).join('')
+          : '<option value="">لا نصوص بعد — أضف نصًا أولًا</option>';
+      }
+    };
+    $('#category').onchange = passageRow;
+    passageRow();
     $('#manual').onsubmit = async e => {
       e.preventDefault();
       const out = $('#manual-out');
@@ -136,6 +156,7 @@
       const r = await api('POST', 'api/admin/items', {
         section: $('#section').value, category: $('#category').value, difficulty: $('#difficulty').value,
         skillId: $('#skillId').value, skill: $('#skill').value, text: $('#text').value,
+        ...(!$('#passage-row').hidden && $('#passageId').value ? { passageId: $('#passageId').value } : {}),
         options: [0, 1, 2, 3].map(i => $('#opt' + i).value),
         answer: $('#answer').value, explanation: $('#explanation').value, source: $('#source').value,
         origin: 'manual', ...authorPayload(),
@@ -234,18 +255,107 @@
     });
   }
 
+  // ---------- passages ----------
+  // A passage is written once and its questions hang off it, which is both how the real
+  // test reads and the reason a correction no longer has to be made three to five times.
+  function passagesView() {
+    if (openPassage) {
+      const p = openPassage.passage, its = openPassage.items;
+      return `<section class="auth-card" style="max-width:min(1000px,96vw)">
+        <p><button id="back">← كل النصوص</button></p>
+        <h1>النص <code>${esc(p.id)}</code></h1>
+        <p class="sub">${p.words} كلمة · ${its.length} سؤالًا عليه · آخر تعديل ${esc(String(p.updatedAt).slice(0, 10))}</p>
+        <form id="edit-passage" novalidate>
+          <p><label for="ptext">نص القطعة</label><textarea id="ptext" rows="10">${esc(p.text)}</textarea></p>
+          <p class="muted">تعديل النص يسري على ${its.length} سؤالًا، ويُعيد المنشور منها إلى المراجعة.</p>
+          <button class="primary" type="submit">حفظ النص</button>
+        </form>${noticeHtml()}
+        <h2>الأسئلة على هذا النص</h2>
+        <div class="admin-table"><table><thead><tr><th>المعرف</th><th>الحالة</th><th>المهارة</th><th>السؤال</th></tr></thead>
+          <tbody>${its.map(i => `<tr><td><code>${esc(i.id)}</code></td><td>${esc(STATUS_LABEL[i.status] || i.status)}</td>
+            <td>${esc((meta.skills.find(sk => sk.id === i.skillId) || {}).label || '—')}</td>
+            <td dir="auto">${esc(i.text)}</td></tr>`).join('') || '<tr><td colspan="4">لا أسئلة بعد.</td></tr>'}</tbody></table></div></section>`;
+    }
+    return `<section class="auth-card" style="max-width:min(1000px,96vw)"><h1>النصوص</h1>
+      <p class="sub">${meta.passages} نصًا. اكتب النص مرة واحدة، ثم أضف أسئلته من «إدخال يدوي».</p>
+      <form id="new-passage" novalidate>
+        <p><label for="newtext">نص جديد</label><textarea id="newtext" rows="6" placeholder="الصق القطعة بلا كلمة «النص:»"></textarea></p>
+        <button class="primary" type="submit">إضافة النص</button>
+      </form>${noticeHtml()}
+      <div class="admin-table"><table><thead><tr><th>المعرف</th><th>كلمات</th><th>أسئلة</th><th>منشورة</th><th>بداية النص</th><th></th></tr></thead>
+        <tbody>${passages.map(p => `<tr><td><code>${esc(p.id)}</code></td><td>${p.words}</td><td>${p.items}</td><td>${p.live}</td>
+          <td dir="auto">${esc(p.text.slice(0, 70))}…</td>
+          <td><button data-open="${esc(p.id)}">عرض وتعديل</button>${p.items ? '' : ` <button data-del="${esc(p.id)}">حذف</button>`}</td></tr>`).join('')
+          || '<tr><td colspan="6">لا نصوص بعد.</td></tr>'}</tbody></table></div></section>`;
+  }
+
+  function wirePassages() {
+    if (openPassage) {
+      $('#back').onclick = async () => { openPassage = null; notice = null; await loadPassages(); render(); };
+      $('#edit-passage').onsubmit = async e => {
+        e.preventDefault();
+        const id = openPassage.passage.id;
+        const r = await api('POST', 'api/admin/passages/update', { id, text: $('#ptext').value });
+        notice = r.status === 200
+          ? { kind: 'ok', text: `حُفظ النص. تأثّر ${r.data.affected} سؤالًا، وعاد ${r.data.unpublished} منها إلى المراجعة.` }
+          : { kind: 'error', text: r.data.error || 'تعذّر الحفظ.' };
+        if (r.status === 200) { await refreshCounts(); await openOne(id); }
+        render();
+      };
+      return;
+    }
+    $('#new-passage').onsubmit = async e => {
+      e.preventDefault();
+      const r = await api('POST', 'api/admin/passages', { text: $('#newtext').value });
+      notice = r.status === 201
+        ? { kind: 'ok', text: `أُضيف النص ${r.data.id} (${r.data.words} كلمة). أضف أسئلته من «إدخال يدوي».` }
+        : { kind: 'error', text: r.data.error || 'تعذّر الإضافة.' };
+      if (r.status === 201) { await refreshCounts(); await loadPassages(); }
+      render();
+    };
+    main.querySelectorAll('[data-open]').forEach(b => {
+      b.onclick = async () => { await openOne(b.dataset.open); render(); };
+    });
+    main.querySelectorAll('[data-del]').forEach(b => {
+      b.onclick = async () => {
+        const r = await api('POST', 'api/admin/passages/delete', { id: b.dataset.del });
+        notice = r.status === 200 ? { kind: 'ok', text: 'حُذف النص.' }
+          : { kind: 'error', text: r.data.error || 'تعذّر الحذف.' };
+        if (r.status === 200) { await refreshCounts(); await loadPassages(); }
+        render();
+      };
+    });
+  }
+
+  async function loadPassages() {
+    const r = await api('GET', 'api/admin/passages');
+    passages = r.status === 200 ? r.data.passages : [];
+  }
+  async function openOne(id) {
+    const r = await api('GET', 'api/admin/passages?id=' + encodeURIComponent(id));
+    openPassage = r.status === 200 ? r.data : null;
+  }
+
   // ---------- shell ----------
-  const TABS = [['manual', 'إدخال يدوي'], ['upload', 'رفع Excel'], ['queue', 'قائمة الأسئلة']];
+  const TABS = [['manual', 'إدخال يدوي'], ['upload', 'رفع Excel'], ['passages', 'النصوص'], ['queue', 'قائمة الأسئلة']];
 
   function render() {
     const counts = meta.counts;
     main.innerHTML = `<nav class="admin-stats" aria-label="أقسام البوابة">${
       TABS.map(([k, label]) => `<button data-tab="${k}"${k === tab ? ' class="primary"' : ''}>${esc(label)}</button>`).join(' ')
-      }</nav><p class="muted">مسوّدات ${counts.draft} · مراجَعة ${counts.reviewed} · منشورة ${counts.live} · مسحوبة ${counts.retired}</p>`
-      + (tab === 'manual' ? manualView() : tab === 'upload' ? uploadView() : queueView());
+      }</nav><p class="muted">مسوّدات ${counts.draft} · مراجَعة ${counts.reviewed} · منشورة ${counts.live} · مسحوبة ${counts.retired} · نصوص ${meta.passages}</p>`
+      + (tab === 'manual' ? manualView() : tab === 'upload' ? uploadView()
+        : tab === 'passages' ? passagesView() : queueView());
     main.querySelectorAll('nav button').forEach(b => {
-      b.onclick = async () => { tab = b.dataset.tab; if (tab === 'queue') await loadList(); render(); };
+      b.onclick = async () => {
+        tab = b.dataset.tab;
+        notice = null;
+        if (tab === 'queue') await loadList();
+        if (tab === 'passages') { openPassage = null; await loadPassages(); }
+        render();
+      };
     });
+    if (tab === 'passages') wirePassages();
     if (tab === 'manual') wireManual();
     if (tab === 'upload') wireUpload();
     if (tab === 'queue') wireQueue();
@@ -263,7 +373,7 @@
   }
   async function refreshCounts() {
     const r = await api('GET', 'api/admin/items/meta');
-    if (r.status === 200) { meta.counts = r.data.counts; meta.skills = r.data.skills; }
+    if (r.status === 200) { meta.counts = r.data.counts; meta.skills = r.data.skills; meta.passages = r.data.passages; }
   }
 
   (async () => {
@@ -278,6 +388,7 @@
     }
     if (r.status !== 200) { main.innerHTML = '<p class="auth-error">تعذّر تحميل البوابة. أعد تحميل الصفحة.</p>'; return; }
     meta = r.data;
+    await loadPassages();
     render();
   })();
 })();

@@ -20,7 +20,7 @@ const ANSWER_LETTERS = ['أ', 'ب', 'ج', 'د'];
 const TEMPLATE_COLUMNS = ['معرف السؤال', 'القسم', 'التصنيف', 'الصعوبة', 'السؤال',
   'الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د', 'الإجابة الصحيحة', 'الشرح', 'المرجع'];
 
-const LIMITS = { text: 4000, option: 400, explanation: 4000, source: 300, skill: 120, id: 64 };
+const LIMITS = { text: 4000, option: 400, explanation: 4000, source: 300, skill: 120, id: 64, passage: 6000 };
 
 const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
 
@@ -63,11 +63,38 @@ function normalizeText(value) {
 
 // The fingerprint covers the stem and the option set, not the option order: reordering
 // the choices does not make a new question. The key is what the student actually reads.
+//
+// A reading question also takes its passage in, because the stem alone does not identify
+// it: «ما الفكرة الرئيسة للنص؟» is a different question under every passage, and once the
+// passage lives in its own row the stem stops carrying it. Items with no passage hash
+// exactly as before, so nothing else has to be recomputed.
 function fingerprint(item) {
   const stem = normalizeText(item.text);
   const opts = (item.options || []).map(normalizeText).sort().join('|');
-  return crypto.createHash('sha256').update(stem + '\u0000' + opts).digest('hex');
+  const passage = item.passageText ? normalizeText(item.passageText) : '';
+  const body = passage ? passage + '\u0000' + stem : stem;
+  return crypto.createHash('sha256').update(body + '\u0000' + opts).digest('hex');
 }
+
+// Reading items in the bank are one string: «النص: …», a blank line, then the question.
+// Splitting them is unambiguous — all 254 share that exact shape — and it is what lets one
+// passage serve its three to five questions instead of being retyped under each.
+const PASSAGE_PREFIX = /^النص\s*:\s*/;
+function splitPassage(text) {
+  const raw = String(text == null ? '' : text);
+  const at = raw.indexOf('\n\n');
+  if (at === -1 || !PASSAGE_PREFIX.test(raw)) return { passageText: '', text: raw.trim() };
+  return {
+    passageText: raw.slice(0, at).replace(PASSAGE_PREFIX, '').trim(),
+    text: raw.slice(at + 2).trim(),
+  };
+}
+// The one place the two halves are put back together, so the app and any export agree.
+const joinPassage = (passageText, text) => (passageText ? `النص: ${passageText}\n\n${text}` : text);
+
+// Only this category is passage-based today; a question outside it with a passage is an
+// error rather than something to silently accept.
+const PASSAGE_CATEGORY = 'استيعاب المقروء';
 
 const clean = (v, max) => String(v == null ? '' : v).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, max);
 
@@ -91,6 +118,8 @@ function validateItem(raw, { strict = false } = {}) {
     id: clean(raw && raw.id, LIMITS.id),
     section: clean(raw && raw.section, 20),
     category: clean(raw && raw.category, 60),
+    passageId: clean(raw && raw.passageId, 32),
+    passageText: clean(raw && raw.passageText, LIMITS.passage),
     skillId: clean(raw && raw.skillId, 32),
     skill: clean(raw && raw.skill, LIMITS.skill),
     difficulty: clean(raw && raw.difficulty, 20),
@@ -101,6 +130,19 @@ function validateItem(raw, { strict = false } = {}) {
     source: clean(raw && raw.source, LIMITS.source),
   };
 
+  // A caller may send the passage separately, or send the bank's combined form and let it
+  // be split here. Either way only the question reaches item.text.
+  if (!item.passageText && !item.passageId) {
+    const split = splitPassage(item.text);
+    if (split.passageText) { item.passageText = split.passageText.slice(0, LIMITS.passage); item.text = split.text; }
+  } else {
+    const split = splitPassage(item.text);
+    if (split.passageText) item.text = split.text;   // combined text sent alongside a passage
+  }
+  if (item.passageText && item.passageText.length < 40) errors.push('النص قصير جدًا ليكون نص استيعاب.');
+  if (item.category && item.category !== PASSAGE_CATEGORY && (item.passageText || item.passageId)) {
+    errors.push(`النص المرفق لا يُستخدم إلا في «${PASSAGE_CATEGORY}».`);
+  }
   if (item.id && !/^[A-Za-z0-9َ_-]{1,64}$/.test(item.id)) errors.push('المعرف يقبل الحروف اللاتينية والأرقام والشرطات فقط.');
   // A caller may name the skill, or leave it to the taxonomy to place the question from its
   // category and descriptive label. A named skill that is not on the list is an error: the
@@ -133,6 +175,9 @@ function validateItem(raw, { strict = false } = {}) {
     if (item.explanation.length < 10) errors.push('الشرح مطلوب قبل النشر (١٠ أحرف على الأقل).');
     if (!item.source) errors.push('المرجع مطلوب قبل النشر: وثّق أصالة السؤال.');
     if (!item.skillId) errors.push('لا يمكن نشر سؤال بلا مهارة من القائمة المعتمدة.');
+    if (item.category === PASSAGE_CATEGORY && !item.passageText && !item.passageId) {
+      errors.push('سؤال استيعاب المقروء يحتاج نصًا؛ بلا نص يرى الطالب سؤالًا معلّقًا.');
+    }
   }
   return { ok: errors.length === 0, item, errors };
 }
@@ -163,6 +208,7 @@ function canTransition(from, to) {
 
 module.exports = {
   SKILLS: taxonomy.SKILLS, SKILL_IDS: taxonomy.SKILL_IDS,
+  PASSAGE_CATEGORY, splitPassage, joinPassage,
   SECTIONS, DIFFICULTIES, STATUSES, ORIGINS, AUTHOR_KINDS, CATEGORIES, ANSWER_LETTERS,
   TEMPLATE_COLUMNS, LIMITS, normalizeText, fingerprint, parseAnswer, validateItem,
   fromTemplateRow, isBlankRow, canTransition, TRANSITIONS,
