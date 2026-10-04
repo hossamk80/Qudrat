@@ -34734,33 +34734,7 @@
       "Q-R-032"
     ]
   },
-  "references": [
-    {
-      "name": "4_5852643688198447092_260919_124820.pdf",
-      "url": "references/reference-1.pdf",
-      "pages": 38
-    },
-    {
-      "name": "4_5854895488012133188_260919_125408.pdf",
-      "url": "references/reference-2.pdf",
-      "pages": 12
-    },
-    {
-      "name": "4_5854895488012133210_260919_125311.pdf",
-      "url": "references/reference-3.pdf",
-      "pages": 12
-    },
-    {
-      "name": "most_frequent.pdf",
-      "url": "references/reference-4.pdf",
-      "pages": 921
-    },
-    {
-      "name": "تسريبات المفكر يوم الخميس 2_260919_125024.pdf",
-      "url": "references/reference-5.pdf",
-      "pages": 37
-    }
-  ],
+  "references": [],
   "sourceVersion": 10,
   "sourceFile": "GAT_Question_Bank_Arabic_1000_Student_Experience_v9(1).xlsx",
   "editorialReview": {
