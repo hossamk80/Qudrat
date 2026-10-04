@@ -95,6 +95,9 @@ function openDb(dataDir) {
       answer INTEGER NOT NULL,
       explanation TEXT NOT NULL DEFAULT '',
       source TEXT NOT NULL DEFAULT '',
+      -- The editorial review record the migrated bank carries (batch, date, type), kept as
+      -- JSON: it is the audit trail for originality and must not be lost in the move.
+      review TEXT NOT NULL DEFAULT '',
       fingerprint TEXT NOT NULL UNIQUE,
       origin TEXT NOT NULL,
       author_kind TEXT NOT NULL,

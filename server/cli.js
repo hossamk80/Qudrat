@@ -4,9 +4,11 @@
 //   node server/cli.js reset-password <email> <new-password>
 //   node server/cli.js list
 //   node server/cli.js backup <file>
+//   node server/cli.js migrate-bank [--dry-run]
 const path = require('node:path');
 const { openDb } = require('./db');
 const { hashPassword, loadConfig } = require('./server');
+const { migrateBank } = require('./migrate-bank');
 
 (async () => {
   const [cmd, a, b] = process.argv.slice(2);
@@ -31,8 +33,24 @@ const { hashPassword, loadConfig } = require('./server');
     if (!a) { console.error('Usage: backup <file>'); process.exit(1); }
     db.exec(`VACUUM INTO '${path.resolve(a).replace(/'/g, "''")}'`);
     console.log('Backup written to', path.resolve(a));
+  } else if (cmd === 'migrate-bank') {
+    const dryRun = process.argv.includes('--dry-run');
+    const bank = require('../dist/data.json');
+    const r = migrateBank(db, bank, { dryRun });
+    console.log(`${dryRun ? '[dry run] ' : ''}bank: ${r.total} questions`);
+    console.log(`  ${dryRun ? 'would migrate' : 'migrated'}: ${r.migrated}`);
+    console.log(`  already present: ${r.skipped}`);
+    if (r.duplicates.length) {
+      console.log(`  duplicates inside the bank, first kept: ${r.duplicates.length}`);
+      for (const d of r.duplicates) console.log(`    ${d.id} is the same question as ${d.sameAs}`);
+    }
+    if (r.invalid.length) {
+      console.log(`  rejected by the validator: ${r.invalid.length}`);
+      for (const x of r.invalid) console.log(`    ${x.id}: ${x.errors.join(' | ')}`);
+      process.exitCode = 1;   // a bank that no longer validates is a failure, not a warning
+    }
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file>');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run]');
   }
   db.close();
 })();

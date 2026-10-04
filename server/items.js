@@ -7,7 +7,7 @@ const crypto = require('node:crypto');
 const SECTIONS = ['لفظي', 'كمي'];
 const DIFFICULTIES = ['سهل', 'متوسط', 'صعب'];
 const STATUSES = ['draft', 'reviewed', 'live', 'retired'];
-const ORIGINS = ['manual', 'excel', 'api'];
+const ORIGINS = ['manual', 'excel', 'api', 'legacy'];  // legacy: the bank migrated out of dist/data.json
 const AUTHOR_KINDS = ['human', 'ai'];
 // Taken from the shipped bank so imports cannot invent a category the app never renders.
 const CATEGORIES = {
@@ -26,13 +26,37 @@ const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
 // Duplicate detection has to survive the ways the same question gets retyped: different
 // diacritics, أ/إ/آ for ا, ة for ه, Arabic-Indic digits, stray punctuation and spacing.
 // Two questions that differ only in those are the same question for our purposes.
+//
+// What it must NOT discard is arithmetic. A quantitative option set is frequently four
+// values that differ only by a sign or a comparison: 7 and -7, س > 5 and س < 5,
+// (س + 8)(س − 3) and (س − 8)(س + 3). Dropping every non-letter collapses those into one
+// another and rejects a sound question as a duplicate, so this removes a named list of
+// sentence punctuation and keeps every operator. Decimal separators are protected before
+// the comma and the full stop go.
+const NOISE = /[!؟?."'”“‘’,،;؛:…«»]/g;
+const DASHES = /[−‒–—―]/g;   // the minus sign and the dashes typed for it
+const DEC = '\u0001';
+const DEC_RE = new RegExp(DEC, 'g');
+
 function normalizeText(value) {
   return String(value == null ? '' : value)
     .replace(/[ً-ْٰـ]/g, '')
     .replace(/[أإاآ]/g, 'ا')
     .replace(/ى/g, 'ي').replace(/ؤ/g, 'و').replace(/ئ/g, 'ي').replace(/ة/g, 'ه')
     .replace(/[٠-٩]/g, d => String(ARABIC_DIGITS.indexOf(d)))
-    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .replace(/[٫٬]/g, '.')                 // Arabic decimal and thousands marks
+    .replace(DASHES, '-')
+    .replace(/[×✕∗]/g, '*').replace(/÷/g, '/')  // the same operation, written either way
+    .replace(/(\d)[.,](\d)/g, '$1' + DEC + '$2')     // 3.5 must not become 3 5
+    .replace(NOISE, ' ')
+    .replace(DEC_RE, '.')
+    .replace(/\s+/g, ' ')
+    // س - 7 and س-7 are one formula written two ways, so spacing around an operator is
+    // noise; the operator itself is not, which is why it is kept above.
+    .replace(/ ?([-+*/=<>≤≥≠^()√%]) ?/g, '$1')
+    // 3س and 3 س are the same coefficient; the space between a number and what follows
+    // it carries no meaning either.
+    .replace(/(\d) +(?=[\p{L}\d])/gu, '$1')
     .trim().toLowerCase();
 }
 
