@@ -238,6 +238,10 @@ function createServer(config = loadConfig()) {
       reviewed_by = CASE WHEN ? IN ('reviewed','live') THEN ? ELSE reviewed_by END,
       reviewed_at = CASE WHEN ? IN ('reviewed','live') THEN ? ELSE reviewed_at END WHERE id = ?`),
     itemCounts: db.prepare('SELECT status, COUNT(*) AS n FROM items GROUP BY status'),
+    liveItems: db.prepare(`SELECT id, section, category, passage_id, skill_id, skill, difficulty, text,
+      options, answer, explanation, source, review FROM items WHERE status = 'live' ORDER BY id`),
+    livePassages: db.prepare(`SELECT DISTINCT p.id, p.text, p.words FROM passages p
+      JOIN items i ON i.passage_id = p.id WHERE i.status = 'live' ORDER BY p.id`),
     insertPassage: db.prepare(`INSERT INTO passages (id, text, fingerprint, words, created_by, created_at, updated_at)
       VALUES (?, ?, ?, ?, ?, ?, ?)`),
     passageById: db.prepare('SELECT * FROM passages WHERE id = ?'),
@@ -322,6 +326,46 @@ function createServer(config = loadConfig()) {
     } catch (err) { console.error('item revision write failed:', err.message); }
   }
 
+  // The published bank, built once and kept until something changes it. 1489 questions is
+  // too much to reassemble per request, and students fetch it on every page load.
+  //
+  // The cache is keyed on a signature read from the database, not only on this process's own
+  // writes: `node server/cli.js migrate-bank` changes the bank from outside the server, and a
+  // cache that only trusted its own invalidation served a stale answer afterwards — a 404 that
+  // outlived the migration that fixed it.
+  let bankCache = null, bankKey = '';
+  const invalidateBank = () => { bankCache = null; bankKey = ''; };
+  const bankSignature = () => {
+    const i = db.prepare("SELECT COUNT(*) AS n, IFNULL(MAX(updated_at), '') AS at FROM items WHERE status = 'live'").get();
+    const p = db.prepare("SELECT COUNT(*) AS n, IFNULL(MAX(updated_at), '') AS at FROM passages").get();
+    return `${i.n}:${i.at}:${p.n}:${p.at}`;
+  };
+  function publishedBank() {
+    const key = bankSignature();
+    if (bankCache && bankKey === key) return bankCache;
+    const rows = q.liveItems.all();
+    // Only the question is stored on a reading item; the passage travels once in its own
+    // array, and the client rejoins them for the views that still expect one string.
+    const payload = {
+      questions: rows.map(r => ({
+        id: r.id, section: r.section, category: r.category,
+        skill: r.skill || '', skillId: r.skill_id || '', difficulty: r.difficulty,
+        text: r.text, options: JSON.parse(r.options), answer: r.answer,
+        explanation: r.explanation, source: r.source,
+        ...(r.passage_id ? { passageId: r.passage_id } : {}),
+        ...(r.review ? { review: JSON.parse(r.review) } : {}),
+      })),
+      passages: q.livePassages.all().map(p => ({ id: p.id, text: p.text, words: p.words })),
+      source: 'server',
+      count: rows.length,
+    };
+    // An empty bank is never cached as an answer: the table is usually empty only because
+    // the migration has not run yet, and the next request should see that it has.
+    const body = JSON.stringify(payload);
+    if (payload.count) { bankCache = body; bankKey = key; }
+    return body;
+  }
+
   const passagePrint = text => crypto2.createHash('sha256').update(items.normalizeText(text)).digest('hex');
   const words = text => text.split(/\s+/).filter(Boolean).length;
 
@@ -393,6 +437,17 @@ function createServer(config = loadConfig()) {
 
   const routes = {
     'GET /api/health': (req, res) => json(res, 200, { ok: true, users: q.count.get().n }),
+
+    // The live bank. Public, exactly as dist/data.js already is: this adds no exposure, and
+    // the offline bundle needs to be fetchable without a session. 404 while the table is
+    // empty, so a client that has not had migrate-bank run keeps its bundled copy rather
+    // than showing a student an empty bank.
+    'GET /api/bank': (req, res) => {
+      const body = publishedBank();
+      if (body.includes('"count":0')) return json(res, 404, { error: 'لا يوجد بنك منشور على الخادم.' });
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-cache' });
+      res.end(body);
+    },
 
     'GET /api/me': (req, res) => {
       const u = currentUser(req);
@@ -534,6 +589,7 @@ function createServer(config = loadConfig()) {
         db.exec('COMMIT');
       } catch (err) { db.exec('ROLLBACK'); throw err; }
       for (const it of affected) revise(req, u, it.id, 'passage-update', { passage: row.text }, { passage: clean });
+      invalidateBank();
       audit(req, u, `passage-update:${affected.length}`, null);
       json(res, 200, { id: row.id, words: words(clean), affected: affected.length,
         unpublished: affected.filter(i => i.status === 'live').length });
@@ -604,6 +660,7 @@ function createServer(config = loadConfig()) {
       }
       const result = createItem(req, u, payload, origin, authorKind, String(payload.authorModel || '').trim().slice(0, 80));
       if (!result.ok) return json(res, 422, { error: result.errors[0], errors: result.errors, duplicateOf: result.duplicateOf });
+      invalidateBank();
       audit(req, u, 'item-create:' + origin, null);
       json(res, 201, { id: result.id, status: result.status });
     },
@@ -647,6 +704,7 @@ function createServer(config = loadConfig()) {
         if (r.ok) { added++; if (print) seen.add(print); results.push({ row: rowNumber, ok: true, id: r.id }); }
         else results.push({ row: rowNumber, ok: false, errors: r.errors, duplicateOf: r.duplicateOf });
       }
+      invalidateBank();
       audit(req, u, `item-import:${origin}:${added}/${results.length}`, null);
       json(res, 200, { added, rejected: results.length - added, results });
     },
@@ -669,6 +727,7 @@ function createServer(config = loadConfig()) {
       // Editing a live question puts it back under review: students are reading it now.
       if (row.status === 'live') q.setItemStatus.run('reviewed', now(), 'reviewed', u.id, 'reviewed', now(), row.id);
       revise(req, u, row.id, 'update', itemRow(row), { ...item, id: row.id });
+      invalidateBank();
       audit(req, u, 'item-update', null);
       json(res, 200, { id: row.id, status: row.status === 'live' ? 'reviewed' : row.status });
     },
@@ -696,6 +755,7 @@ function createServer(config = loadConfig()) {
       }
       q.setItemStatus.run(to, now(), to, u.id, to, now(), row.id);
       revise(req, u, row.id, 'status', { status: row.status }, { status: to });
+      invalidateBank();
       audit(req, u, `item-status:${row.status}->${to}`, null);
       json(res, 200, { id: row.id, status: to });
     },
@@ -732,7 +792,7 @@ function createServer(config = loadConfig()) {
       json(res, 400, { error: 'unknown action' });
     },
   };
-  const PUBLIC = new Set(['GET /api/health', 'GET /api/me', 'POST /api/register', 'POST /api/login', 'POST /api/logout']);
+  const PUBLIC = new Set(['GET /api/health', 'GET /api/bank', 'GET /api/me', 'POST /api/register', 'POST /api/login', 'POST /api/logout']);
 
   const server = http.createServer(async (req, res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');

@@ -4,7 +4,7 @@
 (function () {
   'use strict';
   const STORE = 'gat-workspace-v2', OWNER = 'qudrat-account-owner', OFFLINE_BACKUP = 'gat-workspace-v2-offline-backup';
-  const APP = ['vendor/jszip.min.js', 'data.js', 'core.js', 'app.js', 'learn.js', 'engine.js', 'qiyas.js'];
+  const APP = ['vendor/jszip.min.js', 'data.js', 'bank.js', 'core.js', 'app.js', 'learn.js', 'engine.js', 'qiyas.js'];
   const KEEPALIVE_LIMIT = 60000;
   const main = document.getElementById('main');
   let user = null, rev = 0, pending = null, lastSent = null, inflight = false, blocked = false, timer = null;
@@ -46,7 +46,15 @@
   }
   async function bootApp() {
     main.innerHTML = '<p role="status">جارٍ تحميل بنك الأسئلة…</p>';
-    for (const src of APP) await loadScript(src);
+    for (const src of APP) {
+      await loadScript(src);
+      // bank.js only installs the loader; it is awaited here so window.GAT_BASE is final
+      // before core.js and the rest read it. A failure leaves the bundled bank in place.
+      if (src === 'bank.js' && typeof window.loadServerBank === 'function') {
+        try { window.bankSource = await window.loadServerBank(); }
+        catch { window.bankSource = 'bundled'; }
+      }
+    }
   }
 
   // ---------- sign in / register ----------
