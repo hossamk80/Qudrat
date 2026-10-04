@@ -8,6 +8,7 @@ const crypto = require('node:crypto');
 const zlib = require('node:zlib');
 const { promisify } = require('node:util');
 const { openDb } = require('./db');
+const items = require('./items');
 
 // Read .env from the project folder however the server is started (npm start, the .bat, or node directly).
 // Variables already set in the environment win over the file.
@@ -223,6 +224,21 @@ function createServer(config = loadConfig()) {
     ingested: db.prepare('SELECT ingested_len FROM progress WHERE user_id = ?'),
     insertAudit: db.prepare(`INSERT INTO admin_audit
       (actor_id, actor_email, action, target_id, target_email, ip, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
+    insertItem: db.prepare(`INSERT INTO items
+      (id, section, category, skill, difficulty, text, options, answer, explanation, source,
+       fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`),
+    updateItem: db.prepare(`UPDATE items SET section = ?, category = ?, skill = ?, difficulty = ?,
+      text = ?, options = ?, answer = ?, explanation = ?, source = ?, fingerprint = ?, updated_at = ?
+      WHERE id = ?`),
+    itemById: db.prepare('SELECT * FROM items WHERE id = ?'),
+    itemByPrint: db.prepare('SELECT id, status FROM items WHERE fingerprint = ?'),
+    setItemStatus: db.prepare(`UPDATE items SET status = ?, updated_at = ?,
+      reviewed_by = CASE WHEN ? IN ('reviewed','live') THEN ? ELSE reviewed_by END,
+      reviewed_at = CASE WHEN ? IN ('reviewed','live') THEN ? ELSE reviewed_at END WHERE id = ?`),
+    itemCounts: db.prepare('SELECT status, COUNT(*) AS n FROM items GROUP BY status'),
+    insertRevision: db.prepare(`INSERT INTO item_revisions
+      (item_id, actor_id, actor_email, change, before, after, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
   };
   q.purgeSessions.run(now());
 
@@ -269,6 +285,48 @@ function createServer(config = loadConfig()) {
       q.insertAudit.run(actor?.id ?? null, actor?.email ?? '', action,
         target?.id ?? null, target?.email ?? '', clientIp(req), now());
     } catch (err) { console.error('audit write failed:', err.message); }
+  }
+
+  const nextItemId = (section, category) => {
+    // Short, stable, and never colliding with the shipped bank's V-/Q- ids.
+    const prefix = section === 'كمي' ? 'QN' : 'VN';
+    for (let i = 0; i < 50; i++) {
+      const id = prefix + '-' + crypto.randomBytes(5).toString('base64url').replace(/[-_]/g, 'A');
+      if (!q.itemById.get(id)) return id;
+    }
+    throw Object.assign(Error('could not allocate an item id'), { status: 500 });
+  };
+
+  const itemRow = r => ({
+    id: r.id, section: r.section, category: r.category, skill: r.skill, difficulty: r.difficulty,
+    text: r.text, options: JSON.parse(r.options), answer: r.answer, explanation: r.explanation,
+    source: r.source, origin: r.origin, authorKind: r.author_kind, authorModel: r.author_model,
+    status: r.status, createdAt: r.created_at, updatedAt: r.updated_at, reviewedAt: r.reviewed_at,
+  });
+
+  function revise(req, actor, itemId, change, before, after) {
+    try {
+      q.insertRevision.run(itemId, actor?.id ?? null, actor?.email ?? '', change,
+        before ? JSON.stringify(before) : '', after ? JSON.stringify(after) : '', now());
+    } catch (err) { console.error('item revision write failed:', err.message); }
+  }
+
+  // The one place an item is created, whichever path brought it. Returns a per-row
+  // outcome so a spreadsheet of 200 can report exactly which rows failed and why.
+  function createItem(req, actor, raw, origin, authorKind, authorModel) {
+    const { ok, item, errors } = items.validateItem(raw);
+    if (!ok) return { ok: false, errors };
+    const print = items.fingerprint(item);
+    const clash = q.itemByPrint.get(print);
+    if (clash) return { ok: false, errors: [`مكرر: يطابق السؤال «${clash.id}» (${clash.status}).`], duplicateOf: clash.id };
+    if (item.id && q.itemById.get(item.id)) return { ok: false, errors: [`المعرف «${item.id}» مستخدم مسبقًا.`] };
+    const id = item.id || nextItemId(item.section, item.category);
+    const at = now();
+    q.insertItem.run(id, item.section, item.category, item.skill, item.difficulty, item.text,
+      JSON.stringify(item.options), item.answer, item.explanation, item.source, print,
+      origin, authorKind, authorModel, actor?.id ?? null, at, at);
+    revise(req, actor, id, 'create', null, { ...item, id, origin, authorKind, authorModel });
+    return { ok: true, id, status: 'draft' };
   }
 
   function currentUser(req) {
@@ -372,6 +430,146 @@ function createServer(config = loadConfig()) {
       if (r.changes !== 1) return json(res, 409, { error: 'conflict', rev: current.rev });
       ingest(u.id, data);
       json(res, 200, { rev: rev + 1 });
+    },
+
+    // ---------- question intake ----------
+    // Three ways in (a form, a spreadsheet, a model's output posted as JSON) and one
+    // gate: server/items.js validates all of them, the fingerprint rejects duplicates,
+    // and everything lands as a draft regardless of who or what wrote it.
+
+    'GET /api/admin/items/meta': (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const counts = Object.fromEntries(items.STATUSES.map(s => [s, 0]));
+      for (const r of q.itemCounts.all()) counts[r.status] = r.n;
+      json(res, 200, {
+        sections: items.SECTIONS, categories: items.CATEGORIES, difficulties: items.DIFFICULTIES,
+        statuses: items.STATUSES, answerLetters: items.ANSWER_LETTERS,
+        templateColumns: items.TEMPLATE_COLUMNS, transitions: items.TRANSITIONS, counts,
+      });
+    },
+
+    'GET /api/admin/items': (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const url = new URL(req.url, 'http://x');
+      const status = url.searchParams.get('status') || '';
+      const section = url.searchParams.get('section') || '';
+      const search = String(url.searchParams.get('q') || '').trim().slice(0, 120);
+      const limit = Math.min(Math.max(Number(url.searchParams.get('limit')) || 50, 1), 200);
+      const offset = Math.max(Number(url.searchParams.get('offset')) || 0, 0);
+      const where = [], args = [];
+      if (items.STATUSES.includes(status)) { where.push('status = ?'); args.push(status); }
+      if (items.SECTIONS.includes(section)) { where.push('section = ?'); args.push(section); }
+      if (search) { where.push('(text LIKE ? OR id LIKE ?)'); args.push('%' + search + '%', '%' + search + '%'); }
+      const sql = 'SELECT * FROM items' + (where.length ? ' WHERE ' + where.join(' AND ') : '')
+        + ' ORDER BY updated_at DESC, id LIMIT ? OFFSET ?';
+      const rows = db.prepare(sql).all(...args, limit, offset);
+      const total = db.prepare('SELECT COUNT(*) AS n FROM items' + (where.length ? ' WHERE ' + where.join(' AND ') : '')).get(...args).n;
+      json(res, 200, { items: rows.map(itemRow), total, limit, offset });
+    },
+
+    // Manual entry, and the path a model's output takes when posted one item at a time.
+    'POST /api/admin/items': async (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const payload = await body(req, 64 * 1024);
+      const authorKind = items.AUTHOR_KINDS.includes(payload.authorKind) ? payload.authorKind : null;
+      if (!authorKind) return json(res, 400, { error: 'حدّد من ألّف السؤال: human أو ai.' });
+      const origin = items.ORIGINS.includes(payload.origin) ? payload.origin : 'manual';
+      if (authorKind === 'ai' && !String(payload.authorModel || '').trim()) {
+        return json(res, 400, { error: 'سمّ الأداة أو النموذج الذي ولّد السؤال.' });
+      }
+      const result = createItem(req, u, payload, origin, authorKind, String(payload.authorModel || '').trim().slice(0, 80));
+      if (!result.ok) return json(res, 422, { error: result.errors[0], errors: result.errors, duplicateOf: result.duplicateOf });
+      audit(req, u, 'item-create:' + origin, null);
+      json(res, 201, { id: result.id, status: result.status });
+    },
+
+    // Bulk intake. The browser parses the XLSX with the JSZip reader the app already
+    // ships and posts rows in template order; a tool posting generated questions uses
+    // the same route with `items` objects. Partial success is the point: one bad row
+    // must not reject the other 199, so every row gets its own verdict.
+    'POST /api/admin/items/import': async (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const payload = await body(req, 4 * 1024 * 1024);
+      const authorKind = items.AUTHOR_KINDS.includes(payload.authorKind) ? payload.authorKind : null;
+      if (!authorKind) return json(res, 400, { error: 'حدّد من ألّف الأسئلة: human أو ai.' });
+      if (authorKind === 'ai' && !String(payload.authorModel || '').trim()) {
+        return json(res, 400, { error: 'سمّ الأداة أو النموذج الذي ولّد الأسئلة.' });
+      }
+      const origin = items.ORIGINS.includes(payload.origin) ? payload.origin : 'excel';
+      const model = String(payload.authorModel || '').trim().slice(0, 80);
+      const rows = Array.isArray(payload.rows) ? payload.rows : null;
+      const objs = Array.isArray(payload.items) ? payload.items : null;
+      if (!rows && !objs) return json(res, 400, { error: 'أرسل rows (صفوف القالب) أو items (كائنات).' });
+      const list = rows || objs;
+      if (list.length > 500) return json(res, 413, { error: 'حدّ الرفعة الواحدة ٥٠٠ سؤال.' });
+
+      // Rows identical to each other inside one upload would both pass the database
+      // check in the same transaction, so the batch keeps its own set.
+      const seen = new Set();
+      const results = [];
+      let added = 0;
+      for (let i = 0; i < list.length; i++) {
+        const rowNumber = rows ? i + 5 : i + 1; // spreadsheet data starts on row 5
+        if (rows && items.isBlankRow(list[i])) continue;
+        const raw = rows ? items.fromTemplateRow(list[i]) : list[i];
+        const probe = items.validateItem(raw);
+        const print = probe.ok ? items.fingerprint(probe.item) : null;
+        if (print && seen.has(print)) {
+          results.push({ row: rowNumber, ok: false, errors: ['مكرر داخل الملف نفسه.'] });
+          continue;
+        }
+        const r = createItem(req, u, raw, origin, authorKind, model);
+        if (r.ok) { added++; if (print) seen.add(print); results.push({ row: rowNumber, ok: true, id: r.id }); }
+        else results.push({ row: rowNumber, ok: false, errors: r.errors, duplicateOf: r.duplicateOf });
+      }
+      audit(req, u, `item-import:${origin}:${added}/${results.length}`, null);
+      json(res, 200, { added, rejected: results.length - added, results });
+    },
+
+    'POST /api/admin/items/update': async (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const payload = await body(req, 64 * 1024);
+      const row = q.itemById.get(String(payload.id || ''));
+      if (!row) return json(res, 404, { error: 'not found' });
+      const { ok, item, errors } = items.validateItem({ ...itemRow(row), ...payload, id: row.id });
+      if (!ok) return json(res, 422, { error: errors[0], errors });
+      const print = items.fingerprint(item);
+      const clash = q.itemByPrint.get(print);
+      if (clash && clash.id !== row.id) return json(res, 422, { error: `مكرر: يطابق «${clash.id}».`, duplicateOf: clash.id });
+      q.updateItem.run(item.section, item.category, item.skill, item.difficulty, item.text,
+        JSON.stringify(item.options), item.answer, item.explanation, item.source, print, now(), row.id);
+      // Editing a live question puts it back under review: students are reading it now.
+      if (row.status === 'live') q.setItemStatus.run('reviewed', now(), 'reviewed', u.id, 'reviewed', now(), row.id);
+      revise(req, u, row.id, 'update', itemRow(row), { ...item, id: row.id });
+      audit(req, u, 'item-update', null);
+      json(res, 200, { id: row.id, status: row.status === 'live' ? 'reviewed' : row.status });
+    },
+
+    'POST /api/admin/items/status': async (req, res, u) => {
+      if (!isAdmin(u)) return json(res, 403, { error: 'forbidden' });
+      const { id, status } = await body(req);
+      const row = q.itemById.get(String(id || ''));
+      if (!row) return json(res, 404, { error: 'not found' });
+      const to = String(status || '');
+      if (!items.canTransition(row.status, to)) {
+        return json(res, 409, { error: `لا يمكن الانتقال من ${row.status} إلى ${to || '—'}.` });
+      }
+      if (to === 'live') {
+        // Publishing is the only irreversible-feeling step, so it re-runs the full
+        // check: a draft saved half-finished months ago must not go live as it is.
+        const check = items.validateItem(itemRow(row), { strict: true });
+        if (!check.ok) return json(res, 422, { error: check.errors[0], errors: check.errors });
+        // An item a model wrote reaches students only after a human marked it reviewed.
+        // The status machine already forces draft -> reviewed -> live, and this keeps the
+        // guarantee explicit so a later transition table change cannot quietly drop it.
+        if (row.author_kind === 'ai' && !row.reviewed_at) {
+          return json(res, 409, { error: 'سؤال مولّد آليًا لا يُنشر قبل مراجعة بشرية موثّقة.' });
+        }
+      }
+      q.setItemStatus.run(to, now(), to, u.id, to, now(), row.id);
+      revise(req, u, row.id, 'status', { status: row.status }, { status: to });
+      audit(req, u, `item-status:${row.status}->${to}`, null);
+      json(res, 200, { id: row.id, status: to });
     },
 
     'GET /api/admin/students': (req, res, u) => {

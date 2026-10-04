@@ -77,6 +77,50 @@ function openDb(dataDir) {
       at TEXT NOT NULL
     );
     CREATE INDEX IF NOT EXISTS admin_audit_at ON admin_audit(at);
+
+    -- The question bank, whatever authored it. fingerprint is the duplicate guard: it
+    -- hashes the normalised stem plus the sorted option set, so retyping a question with
+    -- different hamzas, digits or option order cannot slip a second copy in.
+    -- origin says which path it arrived by, author_kind who wrote it. Both are recorded
+    -- because an item authored by a model must never reach a student unreviewed, and
+    -- because originality has to be auditable item by item.
+    CREATE TABLE IF NOT EXISTS items (
+      id TEXT PRIMARY KEY,
+      section TEXT NOT NULL,
+      category TEXT NOT NULL,
+      skill TEXT NOT NULL DEFAULT '',
+      difficulty TEXT NOT NULL,
+      text TEXT NOT NULL,
+      options TEXT NOT NULL,
+      answer INTEGER NOT NULL,
+      explanation TEXT NOT NULL DEFAULT '',
+      source TEXT NOT NULL DEFAULT '',
+      fingerprint TEXT NOT NULL UNIQUE,
+      origin TEXT NOT NULL,
+      author_kind TEXT NOT NULL,
+      author_model TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'draft',
+      created_by INTEGER,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL,
+      reviewed_by INTEGER,
+      reviewed_at TEXT
+    );
+    CREATE INDEX IF NOT EXISTS items_status ON items(status);
+    CREATE INDEX IF NOT EXISTS items_section ON items(section, category);
+
+    -- Every change to an item, so a bad edit can be traced and undone by hand.
+    CREATE TABLE IF NOT EXISTS item_revisions (
+      id INTEGER PRIMARY KEY,
+      item_id TEXT NOT NULL,
+      actor_id INTEGER,
+      actor_email TEXT NOT NULL DEFAULT '',
+      change TEXT NOT NULL,
+      before TEXT NOT NULL DEFAULT '',
+      after TEXT NOT NULL DEFAULT '',
+      at TEXT NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS item_revisions_item ON item_revisions(item_id, id);
   `);
   // Migration for databases created before responses existed.
   const cols = db.prepare('PRAGMA table_info(progress)').all().map(c => c.name);
