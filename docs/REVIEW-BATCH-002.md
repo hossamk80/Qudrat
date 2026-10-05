@@ -100,3 +100,22 @@ node server/cli.js import-items content/batch-002-quant.json
 node server/cli.js import-items content/batch-002-verbal.json
 node server/cli.js import-items content/batch-002-reading.json
 ```
+
+---
+
+## الاعتماد والنشر (أُضيف ٢٠٢٦/١٠/٠٥)
+
+اعتمد مالك المنصة (hossam198012@gmail.com) هذه الدفعة وأمر بتجهيزها بالطريقة
+نفسها التي اعتُمدت بها الدفعة الأولى. فالمراجعة التحريرية في هذا التقرير، والقرار
+قراره، وكلاهما على السجل: اسمه في `items.reviewed_by` و`item_revisions`
+و`admin_audit`، والتأليف يبقى منسوبًا إلى النموذج الذي كتب الأسئلة.
+
+```bash
+node server/cli.js import-items  content/batch-002-*.json
+node server/cli.js publish-items content/batch-002-*.json \
+  --actor hossam198012@gmail.com --note "اعتماد الدفعة الثانية"
+```
+
+الملفات كلها في أمر واحد لا ملفًا ملفًا: الدفعة الواحدة تسكن ملفين أو ثلاثة،
+و«الدفعة كلها أو لا شيء» لا تعني شيئًا إذا كان ثلثها يستطيع النشر وحده. وتفصيل
+الأمر وحرّاسه في `docs/REVIEW-BATCH-001.md`.

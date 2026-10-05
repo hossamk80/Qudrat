@@ -7,8 +7,8 @@
 //   node server/cli.js migrate-bank [--dry-run]
 //   node server/cli.js backfill-skills
 //   node server/cli.js split-passages
-//   node server/cli.js import-items <file.json> [--model <name>]
-//   node server/cli.js publish-items <file.json> --actor <admin-email> [--to reviewed] [--note "..."]
+//   node server/cli.js import-items <file.json> [more.json ...] [--model <name>]
+//   node server/cli.js publish-items <file.json> [more.json ...] --actor <admin-email> [--to reviewed] [--note "..."]
 //   node server/cli.js audit-xlsx <file.xlsx> [more.xlsx ...]      (read-only, no writes)
 //   node server/cli.js import-xlsx <file.xlsx> --source "..." [--model <name>] [--profile <id>]
 //   node server/cli.js calibrate [--synthetic]
@@ -71,11 +71,12 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     // Goes through the same gateway an upload does: the shared validator, the duplicate
     // fingerprint, the passage table, and draft as the only landing state. Authored by a
     // model, so author_kind is 'ai' and nothing here can publish — a human reviews first.
-    if (!a) { console.error('Usage: import-items <file.json> [--model <name>]'); process.exit(1); }
+    const files = process.argv.slice(3).filter(x => /\.json$/i.test(x));
+    if (!files.length) { console.error('Usage: import-items <file.json> [more.json ...] [--model <name>]'); process.exit(1); }
     const flag = process.argv.indexOf('--model');
     const model = flag > -1 ? String(process.argv[flag + 1] || '') : 'claude-opus-5';
     if (!model) { console.error('--model needs a name: an AI-authored item records what wrote it.'); process.exit(1); }
-    const { items: list } = JSON.parse(require('node:fs').readFileSync(path.resolve(a), 'utf8'));
+    const list = files.flatMap(f => JSON.parse(require('node:fs').readFileSync(path.resolve(f), 'utf8')).items);
     const { importItems } = require('./import-items');
     const r = importItems(db, list, { authorModel: model });
     console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
@@ -85,7 +86,10 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     // The other side of import-items: that one can only create drafts, this one is how a
     // human's decision gets onto the record. It needs an admin to name, runs the same strict
     // re-check the publish route runs, and rolls the whole batch back if any question fails.
-    if (!a) { console.error('Usage: publish-items <file.json> --actor <admin-email> [--to reviewed] [--note "..."]'); process.exit(1); }
+    // Several files in one call, because a batch of a hundred lives in three of them and the
+    // all-or-nothing promise is worth nothing if a third of it can publish alone.
+    const files = process.argv.slice(3).filter(x => /\.json$/i.test(x));
+    if (!files.length) { console.error('Usage: publish-items <file.json> [more.json ...] --actor <admin-email> [--to reviewed] [--note "..."]'); process.exit(1); }
     const arg = name => { const i = process.argv.indexOf(name); return i > -1 ? String(process.argv[i + 1] || '') : ''; };
     const email = arg('--actor');
     if (!email) { console.error('--actor needs the email of the admin approving this batch: the human review has to be attributable.'); process.exit(1); }
@@ -95,10 +99,10 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
       console.error(`${actor.email} is not an admin. Use: node server/cli.js make-admin ${actor.email}`); process.exit(1);
     }
     const to = arg('--to') || 'live';
-    const { items: list } = JSON.parse(require('node:fs').readFileSync(path.resolve(a), 'utf8'));
+    const list = files.flatMap(f => JSON.parse(require('node:fs').readFileSync(path.resolve(f), 'utf8')).items);
     const { publishItems } = require('./publish-items');
     const r = publishItems(db, list, { actor, to, note: arg('--note') });
-    console.log(`${r.reviewed} marked reviewed, ${r.published} published live, ${r.already} already ${to}`);
+    console.log(`${files.length} file(s), ${list.length} question(s): ${r.reviewed} marked reviewed, ${r.published} published live, ${r.already} already ${to}`);
     if (r.rolledBack) {
       console.log(`ROLLED BACK — nothing changed. missing: ${r.missing}, failed: ${r.failed}`);
       for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}${x.id ? ' ' + x.id : ''}: ${x.error}`);
@@ -258,7 +262,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | publish-items <file> --actor <email> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file...> | publish-items <file...> --actor <email> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
   }
   db.close();
 })();

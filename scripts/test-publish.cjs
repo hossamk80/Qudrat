@@ -60,8 +60,25 @@ const again = publishItems(db, batch, { actor, to: 'live' });
 assert.equal(again.already, 100, 'already live');
 assert.equal(again.published, 0, 'nothing published twice');
 
-// And the bank the students read now carries them.
+// The remaining three batches, each published as one call across its own files: a batch of a
+// hundred lives in two or three of them, and all-or-nothing has to cover the whole hundred.
+const rest = ['002', '003', '004'].map((b) => fs.readdirSync(path.join(__dirname, '..', 'content'))
+  .filter((f) => f.startsWith(`batch-${b}-`)).sort()
+  .flatMap((f) => read(f)));
+assert.deepEqual(rest.map((b) => b.length), [100, 100, 100], 'three more hundreds');
+for (const batch of rest) {
+  assert.equal(importItems(db, batch, { authorModel: 'test-model' }).added, 100, 'imports');
+  const r = publishItems(db, batch, { actor, to: 'live', note: 'اعتماد الدفعة' });
+  assert(!r.rolledBack, `batch publishes: ${JSON.stringify(r.results.filter((x) => !x.ok).slice(0, 2))}`);
+  assert.equal(r.published, 100, 'all hundred live');
+}
+
+// And the bank the students read now carries all four hundred, each one approved by a person.
 const live = db.prepare("SELECT COUNT(*) AS n FROM items WHERE status = 'live'").get().n;
-assert.equal(live, 100, 'the live bank holds the hundred');
+assert.equal(live, 400, 'the live bank holds the four hundred');
+assert.equal(db.prepare('SELECT COUNT(*) AS n FROM items WHERE reviewed_by IS NULL').get().n, 0,
+  'not one of them is live without a named approver');
+assert.equal(db.prepare("SELECT COUNT(*) AS n FROM items WHERE author_kind != 'ai'").get().n, 0,
+  'and authorship still records that a model wrote them');
 fs.rmSync(dataDir, { recursive: true, force: true });
-console.log('PASS: publishing from the command line — the hundred import as drafts and go live in two recorded steps; the approving admin is named in the item, the revision trail and the audit log while authorship still records the model; a model-authored item with a status but no review record is refused; publishing without a named admin throws; one unknown question rolls the whole batch back and leaves nothing moved; and a second run publishes nothing again.');
+console.log('PASS: publishing from the command line — the hundred import as drafts and go live in two recorded steps; the approving admin is named in the item, the revision trail and the audit log while authorship still records the model; a model-authored item with a status but no review record is refused; publishing without a named admin throws; one unknown question rolls the whole batch back and leaves nothing moved; and a second run publishes nothing again; then the other three batches each publish as one call across their own files, leaving four hundred live, none of them without a named approver.');

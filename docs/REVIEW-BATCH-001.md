@@ -131,8 +131,7 @@ node server/cli.js publish-items <file.json> --actor <admin-email> [--to reviewe
 
 ```bash
 node server/cli.js make-admin hossam198012@gmail.com     # مرة واحدة إن لم يكن مديرًا
-for f in content/batch-001-*.json; do node server/cli.js import-items "$f"; done
-for f in content/batch-001-*.json; do
-  node server/cli.js publish-items "$f" --actor hossam198012@gmail.com --note "اعتماد المئة الأولى"
-done
+node server/cli.js import-items content/batch-001-*.json
+node server/cli.js publish-items content/batch-001-*.json \
+  --actor hossam198012@gmail.com --note "اعتماد المئة الأولى"
 ```
