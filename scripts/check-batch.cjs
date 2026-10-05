@@ -21,6 +21,21 @@ let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
 const perLetter = {};
+const POSITIONAL = /(?:البديل|الخيار|العنوان|البديلان|العنوانان|الخيارين)\s*(?:الأول|الثاني|الثالث|الرابع)|الثلاثة\s+(?:الأولى|الأخرى|الأخيرة)/;
+const LETTER = /\p{Script=Arabic}/u;
+// Occurrences of `word` in `text` as a word of its own: Arabic has no \b, so the character
+// after it must not be a letter ('عنصر' must not match inside 'عنصري'), while before it only a
+// prefix that attaches in Arabic is allowed ('لتقصيره' does carry the word 'تقصيره').
+const PREFIX = /^(?:[وفبلك]|ال|وال|فال|بال|كال|لل)$/;
+function countWord(text, word) {
+  const t = String(text); const w = String(word); let n = 0;
+  for (let i = t.indexOf(w); i !== -1; i = t.indexOf(w, i + 1)) {
+    if (LETTER.test(t[i + w.length] || ' ')) continue;
+    let j = i; while (j > 0 && LETTER.test(t[j - 1])) j--;
+    if (j === i || PREFIX.test(t.slice(j, i))) n++;
+  }
+  return n;
+}
 // A bare numeral, optionally followed by a unit that carries no digits and no arithmetic
 // operator — so '٧٠ كم/س' and '٢٥٪' parse, while '٨ ÷ ٠٫٥' and 'زيادة ١٠٪' are left alone. The
 // unit may hold a slash, since the numeral is anchored at the start and cannot be confused with it.
@@ -69,6 +84,21 @@ for (const file of files) {
       }
       checked++;
     } else unchecked++;
+
+    // An explanation that points at a position ('البديل الثاني', 'الثلاثة الأولى') is wrong the
+    // moment learn.js shuffles the options at delivery, so it must name the option's text instead.
+    if (POSITIONAL.test(raw.explanation)) {
+      console.log(`✗ ${where}: الشرح يحيل إلى موضع الخيار لا إلى نصّه`); problems++; return;
+    }
+    // In the two 'pick the word that does not belong' skills the options are words from the stem,
+    // so a key appearing twice leaves the student guessing which occurrence is the wrong one.
+    if (raw.skillId === 'VE-FACT' || raw.skillId === 'VE-CONTRADICT') {
+      const k = v.item.options[v.item.answer];
+      const hits = countWord(raw.text, k);
+      if (hits !== 1) {
+        console.log(`✗ ${where}: المفتاح «${k}» يرد ${hits} مرة في الجذع`); problems++; return;
+      }
+    }
 
     // A key that is the only multi-word option is a cue a student can use without reading the
     // stem, and a distractor that is numerically equal to the key makes two options correct.
