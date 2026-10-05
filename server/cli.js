@@ -8,6 +8,7 @@
 //   node server/cli.js backfill-skills
 //   node server/cli.js split-passages
 //   node server/cli.js import-items <file.json> [--model <name>]
+//   node server/cli.js publish-items <file.json> --actor <admin-email> [--to reviewed] [--note "..."]
 //   node server/cli.js audit-xlsx <file.xlsx> [more.xlsx ...]      (read-only, no writes)
 //   node server/cli.js import-xlsx <file.xlsx> --source "..." [--model <name>] [--profile <id>]
 //   node server/cli.js calibrate [--synthetic]
@@ -80,6 +81,31 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
     for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}: ${(x.errors || []).join(' | ')}`);
     if (r.rejected) process.exitCode = 1;
+  } else if (cmd === 'publish-items') {
+    // The other side of import-items: that one can only create drafts, this one is how a
+    // human's decision gets onto the record. It needs an admin to name, runs the same strict
+    // re-check the publish route runs, and rolls the whole batch back if any question fails.
+    if (!a) { console.error('Usage: publish-items <file.json> --actor <admin-email> [--to reviewed] [--note "..."]'); process.exit(1); }
+    const arg = name => { const i = process.argv.indexOf(name); return i > -1 ? String(process.argv[i + 1] || '') : ''; };
+    const email = arg('--actor');
+    if (!email) { console.error('--actor needs the email of the admin approving this batch: the human review has to be attributable.'); process.exit(1); }
+    const actor = user(email);
+    const adminEmails = loadConfig().adminEmails;
+    if (!(actor.is_admin === 1 || adminEmails.has(actor.email.toLowerCase()))) {
+      console.error(`${actor.email} is not an admin. Use: node server/cli.js make-admin ${actor.email}`); process.exit(1);
+    }
+    const to = arg('--to') || 'live';
+    const { items: list } = JSON.parse(require('node:fs').readFileSync(path.resolve(a), 'utf8'));
+    const { publishItems } = require('./publish-items');
+    const r = publishItems(db, list, { actor, to, note: arg('--note') });
+    console.log(`${r.reviewed} marked reviewed, ${r.published} published live, ${r.already} already ${to}`);
+    if (r.rolledBack) {
+      console.log(`ROLLED BACK — nothing changed. missing: ${r.missing}, failed: ${r.failed}`);
+      for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}${x.id ? ' ' + x.id : ''}: ${x.error}`);
+      process.exitCode = 1;
+    } else {
+      console.log(`approved by ${actor.email} — recorded in items.reviewed_by, item_revisions and admin_audit`);
+    }
   } else if (cmd === 'audit-xlsx') {
     // Read-only. Measures a set of sheets before any of them is imported: how many rows are
     // valid, how many repeat inside their own file, and — the one that only shows across a set —
@@ -232,7 +258,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | publish-items <file> --actor <email> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
   }
   db.close();
 })();
