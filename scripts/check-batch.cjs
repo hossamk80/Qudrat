@@ -20,6 +20,7 @@ for (const q of bank.questions) {
 let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
+const perLetter = {};
 
 for (const file of files) {
   const data = JSON.parse(fs.readFileSync(path.resolve(file), 'utf8'));
@@ -55,9 +56,24 @@ for (const file of files) {
       checked++;
     } else unchecked++;
 
+    perLetter[raw.answer] = (perLetter[raw.answer] || 0) + 1;
     perSkill[raw.skillId] = perSkill[raw.skillId] || { صعب: 0, متوسط: 0, سهل: 0 };
     perSkill[raw.skillId][raw.difficulty]++;
   });
+}
+
+// A test-wise bias in where the key sits is a cue a student can learn. learn.js shuffles the
+// options at delivery, so the bias never reaches a student through the app — but data that only
+// looks sound because one layer hides it is data that breaks the moment that layer moves.
+const LETTERS = ['أ', 'ب', 'ج', 'د'];
+const n = LETTERS.reduce((a, l) => a + (perLetter[l] || 0), 0);
+if (n >= 40) {
+  const exp = n / 4;
+  const chi = LETTERS.reduce((a, l) => a + ((perLetter[l] || 0) - exp) ** 2 / exp, 0);
+  const line = LETTERS.map((l) => `${l}: ${perLetter[l] || 0}`).join(' · ');
+  // 11.34 is the 0.99 point of the chi-square distribution with 3 degrees of freedom.
+  if (chi > 11.34) { console.log(`✗ موضع الجواب منحاز (${line}، كا²=${chi.toFixed(1)})`); problems++; }
+  else console.log(`موضع الجواب متوازن — ${line} (كا²=${chi.toFixed(1)})`);
 }
 
 console.log('\n--- التوزيع على المهارات ---');
