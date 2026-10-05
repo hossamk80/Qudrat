@@ -8,6 +8,7 @@
 //   node server/cli.js backfill-skills
 //   node server/cli.js split-passages
 //   node server/cli.js import-items <file.json> [--model <name>]
+//   node server/cli.js import-xlsx <file.xlsx> --source "..." [--model <name>] [--profile <id>]
 //   node server/cli.js calibrate [--synthetic]
 //   node server/cli.js simulate-responses [--students N] [--seed S]   (synthetic, for testing only)
 //   node server/cli.js skills
@@ -78,6 +79,56 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
     for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}: ${(x.errors || []).join(' | ')}`);
     if (r.rejected) process.exitCode = 1;
+  } else if (cmd === 'import-xlsx') {
+    // Reads a sheet, detects which column layout it uses, and brings it in through the same gate.
+    // A rejected row is never repaired here: changing a question's options or key without the
+    // author seeing it is how a bank quietly acquires wrong answers. They are written to a report.
+    if (!a) { console.error('Usage: import-xlsx <file.xlsx> --source "..." [--model <name>] [--profile <id>]'); process.exit(1); }
+    const arg = n => { const i = process.argv.indexOf(n); return i > -1 ? String(process.argv[i + 1] || '') : ''; };
+    const items = require('./items');
+    const { readRows } = require('../scripts/xlsx-rows.cjs');
+    const rows = readRows(path.resolve(a));
+    const forced = arg('--profile');
+    const detected = forced && items.PROFILES[forced]
+      ? { name: forced, profile: items.PROFILES[forced], score: 1 }
+      : items.detectProfile(rows[(items.PROFILES[forced] || items.PROFILES['gat-template-v1']).headerRow - 1] || rows[3]);
+    if (!detected) {
+      console.error('Could not recognise the column layout. Known profiles:',
+        Object.keys(items.PROFILES).join(', '));
+      process.exit(1);
+    }
+    console.log(`profile: ${detected.name} (${detected.profile.label}) — header match ${Math.round(detected.score * 100)}%`);
+    const source = arg('--source');
+    if (!source && !Number.isInteger(detected.profile.map.source)) {
+      console.error('This layout has no source column, so --source is required: a published item must document its origin.');
+      process.exit(1);
+    }
+    const body = rows.slice(detected.profile.firstDataRow - 1).filter(r => !items.isBlankRow(r));
+    const converted = body.map((r, i) => {
+      const raw = items.fromRow(r, detected.name);
+      if (source && !String(raw.source || '').trim()) raw.source = source;
+      return { raw, row: detected.profile.firstDataRow + i, label: String(r[detected.profile.map.number ?? detected.profile.map.id] || '') };
+    });
+    const { importItems } = require('./import-items');
+    const model = arg('--model') || 'claude-opus-5';
+    const r = importItems(db, converted.map(c => c.raw), { authorModel: model, authorKind: 'human', origin: 'excel' });
+    console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
+    const rejects = r.results.filter(x => !x.ok).map(x => ({
+      sheetRow: converted[x.row - 1].row,
+      question: converted[x.row - 1].label,
+      reasons: x.errors,
+      options: converted[x.row - 1].raw.options,
+      answer: converted[x.row - 1].raw.answer ?? null,
+    }));
+    if (rejects.length) {
+      const out = path.resolve(a).replace(/\.xlsx$/i, '') + '-rejects.json';
+      require('node:fs').writeFileSync(out, JSON.stringify({ file: path.basename(a), profile: detected.name, rejects }, null, 2));
+      console.log(`rejected rows written to ${out}`);
+      for (const x of rejects.slice(0, 20)) {
+        console.log(`  سؤال ${x.question} (صف ${x.sheetRow}): ${x.reasons.join(' | ')}`);
+      }
+      if (rejects.length > 20) console.log(`  … و${rejects.length - 20} غيرها في التقرير`);
+    }
   } else if (cmd === 'calibrate') {
     const { calibrateBank, MIN_RESPONSES } = require('./calibration');
     const synthetic = process.argv.includes('--synthetic');
@@ -123,7 +174,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | calibrate [--synthetic] | simulate-responses | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
   }
   db.close();
 })();

@@ -58,7 +58,7 @@
     const rows = [];
     for (const row of tags(sheet, 'row')) {
       const n = Number(row.getAttribute('r'));
-      if (!n || n < 5) continue;                       // headers live on row 4
+      if (!n) continue;
       const cells = [];
       for (const c of tags(row, 'c')) {
         const v = tags(c, 'v')[0], isx = tags(c, 'is')[0];
@@ -68,9 +68,25 @@
         else if (v) text = v.textContent;
         cells[colIndex(c.getAttribute('r'))] = text;
       }
-      rows[n - 5] = Array.from({ length: 12 }, (_, i) => cells[i] ?? '');
+      rows[n - 1] = Array.from({ length: Math.max(12, cells.length) }, (_, i) => cells[i] ?? '');
     }
-    return rows.filter(Boolean);
+    return Array.from({ length: rows.length }, (_, i) => rows[i] || []);
+  }
+
+  // Which layout is this sheet in? Compared on the header row, ignoring spacing and the
+  // parentheses the layouts differ on, so «الخيار (أ)» matches «الخيار أ».
+  const headerKey = v => String(v ?? '').trim().replace(/[()\s]+/g, '');
+  function detectProfile(rows) {
+    let best = null;
+    for (const [name, p] of Object.entries(meta.profiles || {})) {
+      const got = (rows[p.headerRow - 1] || []).map(headerKey);
+      const want = p.headers.map(headerKey);
+      const score = want.filter((h, i) => got[i] === h).length / want.length;
+      if (!best || score > best.score) best = { name, p, score };
+    }
+    // A partial match is not a match: the wrong profile moves the answer column and every key
+    // in the file lands on the wrong option.
+    return best && best.score >= 0.75 ? best : null;
   }
 
   // ---------- shared form pieces ----------
@@ -176,11 +192,15 @@
   // ---------- spreadsheet upload ----------
   function uploadView() {
     return `<section class="auth-card" style="max-width:min(860px,96vw)"><h1>رفع ملف Excel</h1>
-      <p class="sub">بالقالب نفسه المرفق: العناوين في الصف الرابع، والأسئلة من الصف الخامس.
-      الأعمدة بالترتيب: ${esc(meta.templateColumns.join(' · '))}</p>
+      <p class="sub">العناوين في الصف الرابع والأسئلة من الصف الخامس. يُكتشف ترتيب الأعمدة من صف
+      العناوين، والأنماط المفهومة:</p>
+      <ul class="muted">${Object.entries(meta.profiles || {}).map(([k, p]) =>
+        `<li><b>${esc(p.label)}</b> — ${esc(p.headers.slice(0, 4).join(' · '))} …</li>`).join('')}</ul>
       <p><a href="GAT_Import_Template.xlsx" download>تنزيل القالب</a></p>
       <form id="upload" novalidate>
         <p><label for="file">ملف .xlsx</label><input id="file" type="file" accept=".xlsx"></p>
+        <p><label for="batch-source">المرجع / إثبات الأصالة للدفعة</label>
+          <input id="batch-source" autocomplete="off" placeholder="يُستخدم للصفوف التي لا عمود مرجع فيها"></p>
         ${authorFields()}
         <button class="primary" type="submit">قراءة الملف ورفعه</button>
       </form><div id="upload-out" role="status"></div></section>`;
@@ -192,15 +212,24 @@
       const out = $('#upload-out'), file = $('#file').files[0];
       if (!file) { out.innerHTML = '<p class="auth-error">اختر ملفًا أولًا.</p>'; return; }
       out.innerHTML = '<p>جارٍ قراءة الملف…</p>';
-      let rows;
-      try { rows = await readRows(file); }
+      let all;
+      try { all = await readRows(file); }
       catch (err) { out.innerHTML = `<p class="auth-error">${esc(err.message)}</p>`; return; }
-      if (!rows.length) { out.innerHTML = '<p class="auth-error">لا توجد صفوف بيانات من الصف الخامس.</p>'; return; }
-      out.innerHTML = `<p>قُرئ ${rows.length} صفًا. جارٍ الرفع…</p>`;
-      const r = await api('POST', 'api/admin/items/import', { rows, origin: 'excel', ...authorPayload() });
+      const found = detectProfile(all);
+      if (!found) {
+        out.innerHTML = '<p class="auth-error">لم يُعرَف ترتيب الأعمدة. تأكد أن صف العناوين هو الرابع وأنه يطابق أحد الأنماط أعلاه.</p>';
+        return;
+      }
+      const rows = all.slice(found.p.firstDataRow - 1).filter(r => r.some(c => String(c ?? '').trim()));
+      if (!rows.length) { out.innerHTML = '<p class="auth-error">لا توجد صفوف بيانات.</p>'; return; }
+      out.innerHTML = `<p>النمط: <b>${esc(found.p.label)}</b> — قُرئ ${rows.length} صفًا. جارٍ الرفع…</p>`;
+      const r = await api('POST', 'api/admin/items/import', {
+        rows, origin: 'excel', profile: found.name,
+        source: $('#batch-source').value, ...authorPayload(),
+      });
       if (r.status !== 200) { out.innerHTML = `<p class="auth-error">${esc(r.data.error || 'تعذّر الرفع.')}</p>`; return; }
       const bad = r.data.results.filter(x => !x.ok);
-      out.innerHTML = `<p><b>أُضيف ${r.data.added} سؤالًا كمسوّدات. رُفض ${r.data.rejected}.</b></p>`
+      out.innerHTML = `<p>النمط: <b>${esc(found.p.label)}</b></p><p><b>أُضيف ${r.data.added} سؤالًا كمسوّدات. رُفض ${r.data.rejected}.</b></p>`
         + (bad.length ? `<div class="admin-table"><table><thead><tr><th>الصف</th><th>السبب</th></tr></thead><tbody>${
             bad.map(x => `<tr><td>${x.row}</td><td>${esc((x.errors || []).join(' — '))}</td></tr>`).join('')}</tbody></table></div>`
           : '<p>لا أخطاء.</p>');

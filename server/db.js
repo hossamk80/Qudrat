@@ -104,6 +104,9 @@ function openDb(dataDir) {
       answer INTEGER NOT NULL,
       explanation TEXT NOT NULL DEFAULT '',
       source TEXT NOT NULL DEFAULT '',
+      -- A quick-solution shortcut, where the source sheet carries one. Separate from the
+      -- explanation: one works the problem through, the other is the trick for the clock.
+      strategy TEXT NOT NULL DEFAULT '',
       -- The editorial review record the migrated bank carries (batch, date, type), kept as
       -- JSON: it is the audit trail for originality and must not be lost in the move.
       review TEXT NOT NULL DEFAULT '',
@@ -193,6 +196,9 @@ function openDb(dataDir) {
     db.exec('ALTER TABLE items ADD COLUMN passage_id TEXT REFERENCES passages(id)');
   }
   db.exec('CREATE INDEX IF NOT EXISTS items_skill ON items(skill_id)');
+  if (itemCols.length && !itemCols.includes('strategy')) {
+    db.exec("ALTER TABLE items ADD COLUMN strategy TEXT NOT NULL DEFAULT ''");
+  }
   db.exec('CREATE INDEX IF NOT EXISTS items_passage ON items(passage_id)');
 
   return db;

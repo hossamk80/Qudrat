@@ -11,8 +11,8 @@ function importItems(db, list, { authorModel, origin = 'manual', authorKind = 'a
 
   const insert = db.prepare(`INSERT INTO items
     (id, section, category, passage_id, skill_id, skill, difficulty, text, options, answer, explanation,
-     source, fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`);
+     source, strategy, fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`);
   const insertPassage = db.prepare(`INSERT INTO passages (id, text, fingerprint, words, created_by, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?)`);
   const passageByPrint = db.prepare('SELECT id FROM passages WHERE fingerprint = ?');
@@ -52,7 +52,7 @@ function importItems(db, list, { authorModel, origin = 'manual', authorKind = 'a
       const id = item.id || ((item.section === 'كمي' ? 'QN-' : 'VN-') + print.slice(0, 8).toUpperCase());
       if (byId.get(id)) { report.results.push({ row, ok: false, errors: [`تعارض في المعرف المولّد ${id}.`] }); report.rejected++; return; }
       insert.run(id, item.section, item.category, passageId, item.skillId, item.skill, item.difficulty,
-        item.text, JSON.stringify(item.options), item.answer, item.explanation, item.source,
+        item.text, JSON.stringify(item.options), item.answer, item.explanation, item.source, item.strategy,
         print, origin, authorKind, authorModel || '', actorId, at, at);
       batchPrints.set(print, id);
       report.added++;

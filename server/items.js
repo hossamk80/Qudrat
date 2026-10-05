@@ -20,6 +20,53 @@ const ANSWER_LETTERS = ['أ', 'ب', 'ج', 'د'];
 const TEMPLATE_COLUMNS = ['معرف السؤال', 'القسم', 'التصنيف', 'الصعوبة', 'السؤال',
   'الخيار أ', 'الخيار ب', 'الخيار ج', 'الخيار د', 'الإجابة الصحيحة', 'الشرح', 'المرجع'];
 
+// Spreadsheets arrive in more than one shape. Rather than demand that every author retype into
+// one template, each recognised layout is described here and detected from its header row.
+//
+// What differs between them is not only column order. A layout may write the section with the
+// definite article (الكمي), name a free-text topic instead of a category from the closed list, give
+// the answer as the option's own value rather than a letter, and carry a column the other has no
+// place for. Each of those is handled by the profile, so the rest of the pipeline sees one shape.
+const PROFILES = {
+  // dist/GAT_Import_Template.xlsx
+  'gat-template-v1': {
+    label: 'قالب قدرات', headerRow: 4, firstDataRow: 5,
+    headers: TEMPLATE_COLUMNS,
+    map: { id: 0, section: 1, category: 2, difficulty: 3, text: 4, options: [5, 6, 7, 8], answer: 9, explanation: 10, source: 11 },
+    answerAs: 'letter',
+  },
+  // A bank export: a running number instead of an id, a free-text subject, the answer written out
+  // as its own value, and a quick-solution strategy in the last column.
+  'bank-part-v1': {
+    label: 'تصدير بنك (رقم السؤال · الموضوع · الإجابة بالقيمة)', headerRow: 4, firstDataRow: 5,
+    headers: ['رقم السؤال', 'القسم', 'الموضوع / المجال', 'مستوى الصعوبة', 'نص السؤال',
+      'الخيار (أ)', 'الخيار (ب)', 'الخيار (ج)', 'الخيار (د)', 'الإجابة الصحيحة',
+      'الشرح التفصيلي والخطوات الرياضية', 'إستراتيجية الحل السريع (اختصار قياس)'],
+    map: { number: 0, section: 1, topic: 2, difficulty: 3, text: 4, options: [5, 6, 7, 8], answer: 9, explanation: 10, strategy: 11 },
+    answerAs: 'value',
+  },
+};
+
+// Free-text subjects seen in bank exports, mapped onto the closed category list. Where the subject
+// cannot tell us the skill — an analogy's subject says "التناظر اللفظي" and nothing about which
+// relation it tests — the skill is left for the taxonomy to resolve from the category instead of
+// being guessed here.
+const TOPIC_MAP = {
+  'النسبة المئوية والحساب': { category: 'الحساب', skillId: 'QA-PERCENT' },
+  'الجبر والمعادلات': { category: 'الجبر', skillId: 'QL-EQUATION' },
+  'المتتابعات والأنماط': { category: 'الجبر', skillId: 'QL-SEQUENCE' },
+  'الهندسة والزوايا': { category: 'الهندسة', skillId: 'QG-ANGLE' },
+  'المسائل الحياتية والسرعات': { category: 'المعدل والعمل والزمن', skillId: 'QW-SPEED' },
+  'المفردة الشاذة': { category: 'الارتباط والاختلاف', skillId: 'VO-CLASS' },
+  'التناظر اللفظي': { category: 'التناظر اللفظي' },
+  'إكمال الجمل': { category: 'إكمال الجمل' },
+  'الخطأ السياقي': { category: 'الخطأ السياقي' },
+  'استيعاب المقروء': { category: 'استيعاب المقروء' },
+};
+
+// الكمي and كمي are the same section; so are اللفظي and لفظي.
+const SECTION_ALIASES = { 'الكمي': 'كمي', 'اللفظي': 'لفظي' };
+
 const LIMITS = { text: 4000, option: 400, explanation: 4000, source: 300, skill: 120, id: 64, passage: 6000 };
 
 const ARABIC_DIGITS = '٠١٢٣٤٥٦٧٨٩';
@@ -118,6 +165,7 @@ function validateItem(raw, { strict = false } = {}) {
     id: clean(raw && raw.id, LIMITS.id),
     section: clean(raw && raw.section, 20),
     category: clean(raw && raw.category, 60),
+    strategy: clean(raw && raw.strategy, LIMITS.explanation),
     passageId: clean(raw && raw.passageId, 32),
     passageText: clean(raw && raw.passageText, LIMITS.passage),
     skillId: clean(raw && raw.skillId, 32),
@@ -167,7 +215,8 @@ function validateItem(raw, { strict = false } = {}) {
   if (item.options.length !== 4) errors.push('يجب أن تكون الخيارات أربعة بالضبط.');
   else if (item.options.some(o => !o)) errors.push('لا يجوز ترك خيار فارغًا.');
   else if (new Set(item.options.map(normalizeText)).size !== 4) errors.push('الخيارات متكررة؛ يجب أن تكون أربعة مختلفة.');
-  if (item.answer === null) errors.push('الإجابة الصحيحة يجب أن تكون أ أو ب أو ج أو د.');
+  if (raw && raw.answerError) errors.push(raw.answerError);
+  else if (item.answer === null) errors.push('الإجابة الصحيحة يجب أن تكون أ أو ب أو ج أو د.');
 
   if (strict) {
     // A question goes live with a worked explanation or not at all: the wrong answer a
@@ -182,16 +231,65 @@ function validateItem(raw, { strict = false } = {}) {
   return { ok: errors.length === 0, item, errors };
 }
 
-// A spreadsheet row in template order. Rows come from the browser's XLSX reader as an
-// array of cell strings; anything shorter than the stem column is treated as blank.
-function fromTemplateRow(row) {
-  const cell = i => (Array.isArray(row) && row[i] != null ? row[i] : '');
-  return {
-    id: cell(0), section: cell(1), category: cell(2), difficulty: cell(3), text: cell(4),
-    options: [cell(5), cell(6), cell(7), cell(8)],
-    answer: cell(9), explanation: cell(10), source: cell(11),
-  };
+// Picks the profile whose header row this sheet matches. Comparison ignores spacing and the
+// parentheses layouts differ on, so «الخيار (أ)» and «الخيار أ» are recognised as the same column.
+const headerKey = v => clean(v, 80).replace(/[()\s]+/g, '');
+function detectProfile(headerCells) {
+  const got = (headerCells || []).map(headerKey).filter(Boolean);
+  let best = null;
+  for (const [name, p] of Object.entries(PROFILES)) {
+    const want = p.headers.map(headerKey);
+    const hits = want.filter((h, i) => got[i] === h).length;
+    const score = hits / want.length;
+    if (!best || score > best.score) best = { name, profile: p, score };
+  }
+  // A partial match is not a match: importing under the wrong profile would silently move the
+  // answer column, and every key in the file would be wrong.
+  return best && best.score >= 0.75 ? best : null;
 }
+
+// A spreadsheet row, read through a profile. Rows come from the browser's XLSX reader as an array
+// of cell strings; anything shorter than the stem column is treated as blank.
+function fromRow(row, profileName = 'gat-template-v1') {
+  const p = PROFILES[profileName] || PROFILES['gat-template-v1'];
+  const m = p.map;
+  const cell = i => (Number.isInteger(i) && Array.isArray(row) && row[i] != null ? String(row[i]) : '');
+  const options = m.options.map(cell);
+  const out = {
+    id: cell(m.id), difficulty: cell(m.difficulty), text: cell(m.text), options,
+    explanation: cell(m.explanation), source: cell(m.source),
+  };
+  // the section may carry the definite article
+  const section = clean(cell(m.section), 20);
+  out.section = SECTION_ALIASES[section] || section;
+  // a category straight from the closed list, or a free-text subject mapped onto it
+  if (Number.isInteger(m.category)) out.category = cell(m.category);
+  else if (Number.isInteger(m.topic)) {
+    const topic = clean(cell(m.topic), 80);
+    const hit = TOPIC_MAP[topic];
+    out.category = hit ? hit.category : topic;      // unmapped subject falls through and is rejected
+    if (hit && hit.skillId) out.skillId = hit.skillId;
+    out.skill = topic;                              // kept as the editorial note it is
+  }
+  if (Number.isInteger(m.strategy)) out.strategy = cell(m.strategy);
+
+  const raw = cell(m.answer);
+  if (p.answerAs === 'value') {
+    // The answer is written out rather than lettered. Matching it against the options is the only
+    // way to place it, and the match has to be exact-after-normalising and unique: a value that
+    // appears in two options does not identify a key, and a value that appears in none is a typo.
+    // Both are reported rather than resolved, because guessing here silently mis-keys a question.
+    const want = normalizeText(raw);
+    const at = options.map((o, i) => (normalizeText(o) === want ? i : -1)).filter(i => i !== -1);
+    if (at.length === 1) out.answer = at[0];
+    else out.answerError = at.length === 0
+      ? `الإجابة «${raw}» لا تطابق أي خيار.`
+      : `الإجابة «${raw}» تطابق ${at.length} خيارات (${at.map(i => ANSWER_LETTERS[i]).join('، ')}) فلا تحدد مفتاحًا.`;
+  } else out.answer = raw;
+  return out;
+}
+// Kept for callers written against the original template.
+const fromTemplateRow = row => fromRow(row, 'gat-template-v1');
 const isBlankRow = row => !Array.isArray(row) || row.every(c => clean(c, 50) === '');
 
 // draft is where everything lands; reviewed means a human read it; live is visible to
@@ -209,6 +307,7 @@ function canTransition(from, to) {
 module.exports = {
   SKILLS: taxonomy.SKILLS, SKILL_IDS: taxonomy.SKILL_IDS,
   PASSAGE_CATEGORY, splitPassage, joinPassage,
+  PROFILES, TOPIC_MAP, SECTION_ALIASES, detectProfile, fromRow,
   SECTIONS, DIFFICULTIES, STATUSES, ORIGINS, AUTHOR_KINDS, CATEGORIES, ANSWER_LETTERS,
   TEMPLATE_COLUMNS, LIMITS, normalizeText, fingerprint, parseAnswer, validateItem,
   fromTemplateRow, isBlankRow, canTransition, TRANSITIONS,

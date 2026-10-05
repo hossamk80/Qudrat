@@ -227,10 +227,10 @@ function createServer(config = loadConfig()) {
       (actor_id, actor_email, action, target_id, target_email, ip, at) VALUES (?, ?, ?, ?, ?, ?, ?)`),
     insertItem: db.prepare(`INSERT INTO items
       (id, section, category, passage_id, skill_id, skill, difficulty, text, options, answer, explanation,
-       source, fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`),
+       source, strategy, fingerprint, origin, author_kind, author_model, status, created_by, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?)`),
     updateItem: db.prepare(`UPDATE items SET section = ?, category = ?, passage_id = ?, skill_id = ?, skill = ?, difficulty = ?,
-      text = ?, options = ?, answer = ?, explanation = ?, source = ?, fingerprint = ?, updated_at = ?
+      text = ?, options = ?, answer = ?, explanation = ?, source = ?, strategy = ?, fingerprint = ?, updated_at = ?
       WHERE id = ?`),
     itemById: db.prepare('SELECT * FROM items WHERE id = ?'),
     itemByPrint: db.prepare('SELECT id, status FROM items WHERE fingerprint = ?'),
@@ -402,7 +402,7 @@ function createServer(config = loadConfig()) {
     const id = item.id || nextItemId(item.section, item.category);
     const at = now();
     q.insertItem.run(id, item.section, item.category, passage.id, item.skillId, item.skill, item.difficulty, item.text,
-      JSON.stringify(item.options), item.answer, item.explanation, item.source, print,
+      JSON.stringify(item.options), item.answer, item.explanation, item.source, item.strategy, print,
       origin, authorKind, authorModel, actor?.id ?? null, at, at);
     revise(req, actor, id, 'create', null, { ...item, id, origin, authorKind, authorModel });
     return { ok: true, id, status: 'draft' };
@@ -619,6 +619,8 @@ function createServer(config = loadConfig()) {
         sections: items.SECTIONS, categories: items.CATEGORIES, difficulties: items.DIFFICULTIES,
         statuses: items.STATUSES, answerLetters: items.ANSWER_LETTERS,
         templateColumns: items.TEMPLATE_COLUMNS, transitions: items.TRANSITIONS, counts,
+        profiles: Object.fromEntries(Object.entries(items.PROFILES).map(([k, v]) =>
+          [k, { label: v.label, headers: v.headers, headerRow: v.headerRow, firstDataRow: v.firstDataRow }])),
         skills: items.SKILLS.map(sk => ({ ...sk, live: perSkill[sk.id] || 0 })),
         passageCategory: items.PASSAGE_CATEGORY,
         passages: db.prepare('SELECT COUNT(*) AS n FROM passages').get().n,
@@ -678,6 +680,10 @@ function createServer(config = loadConfig()) {
         return json(res, 400, { error: 'سمّ الأداة أو النموذج الذي ولّد الأسئلة.' });
       }
       const origin = items.ORIGINS.includes(payload.origin) ? payload.origin : 'excel';
+      // A layout may have no source column at all, so the uploader states one for the batch; the
+      // publish gate still demands it per item, and this is what satisfies it honestly.
+      const batchSource = String(payload.source || '').trim().slice(0, items.LIMITS.source);
+      const profile = items.PROFILES[payload.profile] ? payload.profile : 'gat-template-v1';
       const model = String(payload.authorModel || '').trim().slice(0, 80);
       const rows = Array.isArray(payload.rows) ? payload.rows : null;
       const objs = Array.isArray(payload.items) ? payload.items : null;
@@ -693,7 +699,8 @@ function createServer(config = loadConfig()) {
       for (let i = 0; i < list.length; i++) {
         const rowNumber = rows ? i + 5 : i + 1; // spreadsheet data starts on row 5
         if (rows && items.isBlankRow(list[i])) continue;
-        const raw = rows ? items.fromTemplateRow(list[i]) : list[i];
+        const raw = rows ? items.fromRow(list[i], profile) : list[i];
+        if (batchSource && !String(raw.source || '').trim()) raw.source = batchSource;
         const probe = items.validateItem(raw);
         const print = probe.ok ? items.fingerprint(probe.item) : null;
         if (print && seen.has(print)) {
@@ -723,7 +730,7 @@ function createServer(config = loadConfig()) {
       const clash = q.itemByPrint.get(print);
       if (clash && clash.id !== row.id) return json(res, 422, { error: `مكرر: يطابق «${clash.id}».`, duplicateOf: clash.id });
       q.updateItem.run(item.section, item.category, passage.id, item.skillId, item.skill, item.difficulty, item.text,
-        JSON.stringify(item.options), item.answer, item.explanation, item.source, print, now(), row.id);
+        JSON.stringify(item.options), item.answer, item.explanation, item.source, item.strategy, print, now(), row.id);
       // Editing a live question puts it back under review: students are reading it now.
       if (row.status === 'live') q.setItemStatus.run('reviewed', now(), 'reviewed', u.id, 'reviewed', now(), row.id);
       revise(req, u, row.id, 'update', itemRow(row), { ...item, id: row.id });
