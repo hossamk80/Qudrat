@@ -8,7 +8,7 @@
   },
   "scripts": {
     "start": "node server/server.js",
-    "test": "node scripts/test-server.cjs && node scripts/test-site.cjs && node scripts/test-learning.cjs && node scripts/test-reliability.cjs && node scripts/test-qiyas.cjs && node scripts/test-analytics.cjs && node scripts/test-items.cjs && node scripts/test-migrate-bank.cjs && node scripts/test-taxonomy.cjs && node scripts/test-passages.cjs && node scripts/test-bank-source.cjs && node scripts/test-batch-import.cjs",
+    "test": "node scripts/test-server.cjs && node scripts/test-site.cjs && node scripts/test-learning.cjs && node scripts/test-reliability.cjs && node scripts/test-qiyas.cjs && node scripts/test-analytics.cjs && node scripts/test-items.cjs && node scripts/test-migrate-bank.cjs && node scripts/test-taxonomy.cjs && node scripts/test-passages.cjs && node scripts/test-bank-source.cjs && node scripts/test-batch-import.cjs && node scripts/test-calibration.cjs",
     "test:browser": "node scripts/test-browser.cjs && node scripts/test-items-browser.cjs && node scripts/test-passage-group.cjs"
   }
 }

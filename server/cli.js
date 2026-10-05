@@ -8,6 +8,8 @@
 //   node server/cli.js backfill-skills
 //   node server/cli.js split-passages
 //   node server/cli.js import-items <file.json> [--model <name>]
+//   node server/cli.js calibrate [--synthetic]
+//   node server/cli.js simulate-responses [--students N] [--seed S]   (synthetic, for testing only)
 //   node server/cli.js skills
 const path = require('node:path');
 const { openDb } = require('./db');
@@ -76,6 +78,36 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
     for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}: ${(x.errors || []).join(' | ')}`);
     if (r.rejected) process.exitCode = 1;
+  } else if (cmd === 'calibrate') {
+    const { calibrateBank, MIN_RESPONSES } = require('./calibration');
+    const synthetic = process.argv.includes('--synthetic');
+    const r = calibrateBank(db, { synthetic });
+    if (r.synthetic) console.log('*** بيانات اصطناعية — هذه الأرقام لا تصف طلابًا حقيقيين ***');
+    console.log(`population: ${r.synthetic ? 'SYNTHETIC' : 'real'} · ${r.responses} responses from ${r.students} students`);
+    console.log(`items: ${r.items} · calibrated (n>=${MIN_RESPONSES}): ${r.calibrated} · insufficient: ${r.insufficient} · flagged: ${r.flagged}`);
+    const worst = r.stats.filter(s2 => s2.flags.length).sort((x, y) => (x.rPbis ?? 9) - (y.rPbis ?? 9)).slice(0, 15);
+    for (const s2 of worst) {
+      console.log(`  ${s2.itemId.padEnd(14)} n=${String(s2.n).padStart(4)} p=${s2.pValue} r=${s2.rPbis}  ${s2.flags.join(', ')}`);
+    }
+    if (!r.items) console.log('  لا توجد إجابات في هذه المجموعة بعد.');
+  } else if (cmd === 'simulate-responses') {
+    // Writes synthetic rows only, marked as such. It exists so the calibration arithmetic can be
+    // tested without waiting for students; it is not a stand-in for them.
+    const { simulateResponses, writeSynthetic } = require('./simulate');
+    const num = n => { const i = process.argv.indexOf(n); return i > -1 ? Number(process.argv[i + 1]) : undefined; };
+    const students = num('--students') || 400;
+    const seed = num('--seed') || 20261005;
+    const live = db.prepare("SELECT id, answer FROM items WHERE status = 'live' ORDER BY id").all();
+    if (!live.length) { console.error('No live items to simulate against. Run migrate-bank first.'); process.exit(1); }
+    // parameters drawn from the editorial difficulty, so the shape is plausible; they are invented
+    const diff = db.prepare("SELECT id, difficulty FROM items WHERE status = 'live'").all();
+    const bFor = Object.fromEntries(diff.map(d => [d.id, d.difficulty === 'صعب' ? 1 : d.difficulty === 'متوسط' ? 0 : -1]));
+    const spec = live.map((it, i) => ({ id: it.id, a: 0.8 + ((i % 7) / 10), b: bFor[it.id] ?? 0, key: it.answer }));
+    const { rows } = simulateResponses(spec, { students, seed });
+    const written = writeSynthetic(db, rows);
+    console.log('*** بيانات اصطناعية في جدول synthetic_responses المستقل — لا تُقرأ كأنها إجابات طلاب ***');
+    console.log(`wrote ${written} synthetic responses for ${students} simulated students over ${spec.length} items (seed ${seed}).`);
+    console.log('next: node server/cli.js calibrate --synthetic');
   } else if (cmd === 'skills') {
     const { SKILLS } = require('./taxonomy');
     const counts = Object.fromEntries(db.prepare(
@@ -91,7 +123,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | calibrate [--synthetic] | simulate-responses | skills');
   }
   db.close();
 })();

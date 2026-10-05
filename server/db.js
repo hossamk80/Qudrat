@@ -134,6 +134,40 @@ function openDb(dataDir) {
     );
     CREATE INDEX IF NOT EXISTS item_revisions_item ON item_revisions(item_id, id);
 
+    -- Simulated answers live in their own table, not behind a flag on the real one. A column
+    -- would be one forgotten WHERE clause away from presenting invented data as evidence about
+    -- students; a separate table cannot be mixed in by accident. It carries no foreign key to
+    -- users because a simulated respondent is not an account, which is also why writing one
+    -- cannot touch a real student's row.
+    CREATE TABLE IF NOT EXISTS synthetic_responses (
+      id INTEGER PRIMARY KEY,
+      sim_user INTEGER NOT NULL,
+      item_id TEXT NOT NULL,
+      status TEXT NOT NULL,
+      correct INTEGER NOT NULL,
+      chosen INTEGER,
+      run TEXT NOT NULL DEFAULT '',
+      created_at TEXT NOT NULL,
+      UNIQUE (run, sim_user, item_id)
+    );
+    CREATE INDEX IF NOT EXISTS synthetic_responses_item ON synthetic_responses(item_id);
+
+    -- One row per item per calibration run. p_value is the observed proportion correct, the
+    -- empirical difficulty; r_pbis is the corrected item-total correlation, how well the item
+    -- separates stronger students from weaker ones. flags is a JSON array of quality findings.
+    -- synthetic carries the mark of the data it was computed from.
+    CREATE TABLE IF NOT EXISTS item_stats (
+      item_id TEXT NOT NULL,
+      synthetic INTEGER NOT NULL,
+      n INTEGER NOT NULL,
+      p_value REAL,
+      r_pbis REAL,
+      distractors TEXT NOT NULL DEFAULT '',
+      flags TEXT NOT NULL DEFAULT '[]',
+      computed_at TEXT NOT NULL,
+      PRIMARY KEY (item_id, synthetic)
+    );
+
     -- Reading passages, one row each. The bank held every passage inside each of its three
     -- to five questions: 56 passages written out 254 times, so a correction had to be made
     -- five times and the student saw the passage re-rendered per question instead of once
@@ -160,6 +194,7 @@ function openDb(dataDir) {
   }
   db.exec('CREATE INDEX IF NOT EXISTS items_skill ON items(skill_id)');
   db.exec('CREATE INDEX IF NOT EXISTS items_passage ON items(passage_id)');
+
   return db;
 }
 
