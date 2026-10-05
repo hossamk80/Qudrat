@@ -21,6 +21,9 @@ let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
 const perLetter = {};
+const perCompare = {};
+// dist/qiyas.js — the one order a comparison item is ever presented in.
+const COMPARISON_ORDER = ['القيمة الأولى أكبر', 'القيمة الثانية أكبر', 'القيمتان متساويتان', 'المعطيات غير كافية'];
 
 for (const file of files) {
   const data = JSON.parse(fs.readFileSync(path.resolve(file), 'utf8'));
@@ -56,7 +59,15 @@ for (const file of files) {
       checked++;
     } else unchecked++;
 
-    perLetter[raw.answer] = (perLetter[raw.answer] || 0) + 1;
+    // qiyas.js forces comparison items into COMPARISON_ORDER at delivery, so their stored order
+    // must match it and their key position is decided by content, not by us: they are checked for
+    // that order and left out of the balance below, which would otherwise be meaningless for them.
+    if (COMPARISON_ORDER.every((o) => v.item.options.includes(o))) {
+      if (v.item.options.join('\u0000') !== COMPARISON_ORDER.join('\u0000')) {
+        console.log(`✗ ${where}: خيارات المقارنة خارج الترتيب المعياري`); problems++; return;
+      }
+      perCompare[v.item.options[v.item.answer]] = (perCompare[v.item.options[v.item.answer]] || 0) + 1;
+    } else perLetter[raw.answer] = (perLetter[raw.answer] || 0) + 1;
     perSkill[raw.skillId] = perSkill[raw.skillId] || { صعب: 0, متوسط: 0, سهل: 0 };
     perSkill[raw.skillId][raw.difficulty]++;
   });
@@ -74,6 +85,10 @@ if (n >= 40) {
   // 11.34 is the 0.99 point of the chi-square distribution with 3 degrees of freedom.
   if (chi > 11.34) { console.log(`✗ موضع الجواب منحاز (${line}، كا²=${chi.toFixed(1)})`); problems++; }
   else console.log(`موضع الجواب متوازن — ${line} (كا²=${chi.toFixed(1)})`);
+}
+
+if (Object.keys(perCompare).length) {
+  console.log('أسئلة المقارنة — نوع الجواب: ' + COMPARISON_ORDER.map((o) => `${o}: ${perCompare[o] || 0}`).join(' · '));
 }
 
 console.log('\n--- التوزيع على المهارات ---');
