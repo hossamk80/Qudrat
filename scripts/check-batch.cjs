@@ -21,6 +21,17 @@ let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
 const perLetter = {};
+// A bare numeral, optionally followed by a unit that carries no digits and no arithmetic
+// operator — so '٧٠ كم/س' and '٢٥٪' parse, while '٨ ÷ ٠٫٥' and 'زيادة ١٠٪' are left alone. The
+// unit may hold a slash, since the numeral is anchored at the start and cannot be confused with it.
+const NUMERIC = /^([٠-٩\d]+(?:٫[٠-٩\d]+)?(?:\/[٠-٩\d]+)?)\s*([^\d٠-٩×÷+\-−*()=]*)$/;
+function numericValue(option) {
+  const m = NUMERIC.exec(String(option).trim());
+  if (!m) return null;
+  const digits = [...m[1]].map((c) => (c >= '٠' && c <= '٩' ? String(c.charCodeAt(0) - 0x0660) : c)).join('').replace('٫', '.');
+  if (digits.includes('/')) { const [a, b] = digits.split('/'); return Number(a) / Number(b); }
+  return Number(digits);
+}
 const perCompare = {};
 // dist/qiyas.js — the one order a comparison item is ever presented in.
 const COMPARISON_ORDER = ['القيمة الأولى أكبر', 'القيمة الثانية أكبر', 'القيمتان متساويتان', 'المعطيات غير كافية'];
@@ -58,6 +69,18 @@ for (const file of files) {
       }
       checked++;
     } else unchecked++;
+
+    // A key that is the only multi-word option is a cue a student can use without reading the
+    // stem, and a distractor that is numerically equal to the key makes two options correct.
+    const words = v.item.options.map((o) => String(o).trim().split(/\s+/).length);
+    const key = v.item.answer;
+    if (words[key] > 1 && words.every((w, i) => i === key || w === 1)) {
+      console.log(`✗ ${where}: المفتاح هو الخيار الوحيد المركّب من أكثر من كلمة`); problems++; return;
+    }
+    const nums = v.item.options.map(numericValue);
+    if (nums.every((n) => n !== null) && new Set(nums).size < nums.length) {
+      console.log(`✗ ${where}: خيارات متساوية القيمة العددية`); problems++; return;
+    }
 
     // qiyas.js forces comparison items into COMPARISON_ORDER at delivery, so their stored order
     // must match it and their key position is decided by content, not by us: they are checked for
