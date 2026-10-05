@@ -8,6 +8,7 @@
 //   node server/cli.js backfill-skills
 //   node server/cli.js split-passages
 //   node server/cli.js import-items <file.json> [--model <name>]
+//   node server/cli.js audit-xlsx <file.xlsx> [more.xlsx ...]      (read-only, no writes)
 //   node server/cli.js import-xlsx <file.xlsx> --source "..." [--model <name>] [--profile <id>]
 //   node server/cli.js calibrate [--synthetic]
 //   node server/cli.js simulate-responses [--students N] [--seed S]   (synthetic, for testing only)
@@ -79,6 +80,63 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
     for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}: ${(x.errors || []).join(' | ')}`);
     if (r.rejected) process.exitCode = 1;
+  } else if (cmd === 'audit-xlsx') {
+    // Read-only. Measures a set of sheets before any of them is imported: how many rows are
+    // valid, how many repeat inside their own file, and — the one that only shows across a set —
+    // how many repeat a question from an earlier file. Writes nothing anywhere.
+    const items = require('./items');
+    const { readRows } = require('../scripts/xlsx-rows.cjs');
+    const files = process.argv.slice(3).filter(x => /\.xlsx$/i.test(x));
+    if (!files.length) { console.error('Usage: audit-xlsx <file.xlsx> [more.xlsx ...]'); process.exit(1); }
+    const seen = new Map();                 // fingerprint -> "file#question"
+    const bankPrints = new Map();
+    for (const row of db.prepare('SELECT id, fingerprint FROM items').all()) bankPrints.set(row.fingerprint, row.id);
+    const totals = { rows: 0, valid: 0, invalid: 0, inFile: 0, acrossFiles: 0, inBank: 0 };
+    const reasons = {};
+    console.log(`auditing ${files.length} file(s) against ${bankPrints.size} items already in the bank\n`);
+    for (const f of files) {
+      const rows = readRows(path.resolve(f));
+      const found = items.detectProfile(rows[3]);
+      if (!found) { console.log(`${path.basename(f)}: UNKNOWN LAYOUT — skipped`); continue; }
+      const body = rows.slice(found.profile.firstDataRow - 1).filter(r => !items.isBlankRow(r));
+      const stat = { rows: body.length, valid: 0, invalid: 0, inFile: 0, acrossFiles: 0, inBank: 0 };
+      const here = new Set();
+      body.forEach((r, i) => {
+        const raw = items.fromRow(r, found.name);
+        raw.source = raw.source || 'audit';
+        const v = items.validateItem(raw);
+        const label = `${path.basename(f)}#${r[found.profile.map.number ?? found.profile.map.id] || i + 1}`;
+        if (!v.ok) {
+          stat.invalid++;
+          for (const e of v.errors) { const k = e.replace(/«[^»]*»/g, '«…»'); reasons[k] = (reasons[k] || 0) + 1; }
+          return;
+        }
+        const print = items.fingerprint(v.item);
+        if (bankPrints.has(print)) { stat.inBank++; return; }
+        if (here.has(print)) { stat.inFile++; return; }
+        here.add(print);
+        if (seen.has(print)) { stat.acrossFiles++; return; }
+        seen.set(print, label);
+        stat.valid++;
+      });
+      for (const k of Object.keys(stat)) totals[k] += stat[k];
+      const pct = stat.rows ? Math.round((stat.valid / stat.rows) * 100) : 0;
+      console.log(`${path.basename(f).padEnd(34)} ${String(stat.rows).padStart(5)} rows → ` +
+        `${String(stat.valid).padStart(5)} new (${String(pct).padStart(3)}%)  ` +
+        `dup-in-file ${String(stat.inFile).padStart(4)}  dup-across ${String(stat.acrossFiles).padStart(4)}  ` +
+        `in-bank ${String(stat.inBank).padStart(4)}  invalid ${String(stat.invalid).padStart(4)}`);
+    }
+    console.log('\n' + '-'.repeat(70));
+    console.log(`rows: ${totals.rows}`);
+    console.log(`distinct new questions: ${totals.valid}  (${totals.rows ? Math.round(totals.valid / totals.rows * 100) : 0}% yield)`);
+    console.log(`duplicate inside its own file: ${totals.inFile}`);
+    console.log(`duplicate of an earlier file:  ${totals.acrossFiles}`);
+    console.log(`already in the bank:           ${totals.inBank}`);
+    console.log(`rejected by validation:        ${totals.invalid}`);
+    if (Object.keys(reasons).length) {
+      console.log('\nreasons for rejection:');
+      for (const [k, n] of Object.entries(reasons).sort((a, b) => b[1] - a[1])) console.log(`  ${String(n).padStart(5)} × ${k}`);
+    }
   } else if (cmd === 'import-xlsx') {
     // Reads a sheet, detects which column layout it uses, and brings it in through the same gate.
     // A rejected row is never repaired here: changing a question's options or key without the
@@ -174,7 +232,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
   }
   db.close();
 })();
