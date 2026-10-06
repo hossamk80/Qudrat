@@ -8,6 +8,7 @@
 //   node server/cli.js backfill-skills
 //   node server/cli.js split-passages
 //   node server/cli.js import-items <file.json> [more.json ...] [--model <name>]
+//   node server/cli.js sync-items <file.json> [more.json ...] --actor <admin-email>
 //   node server/cli.js publish-items <file.json> [more.json ...] --actor <admin-email> [--to reviewed] [--note "..."]
 //   node server/cli.js audit-xlsx <file.xlsx> [more.xlsx ...]      (read-only, no writes)
 //   node server/cli.js import-xlsx <file.xlsx> --source "..." [--model <name>] [--profile <id>]
@@ -82,6 +83,27 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     console.log(`${r.added} added as drafts, ${r.rejected} rejected, ${r.passages} new passages`);
     for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}: ${(x.errors || []).join(' | ')}`);
     if (r.rejected) process.exitCode = 1;
+  } else if (cmd === 'sync-items') {
+    // Carries edits in content/ onto questions already stored. Matches by stem, re-validates, and
+    // sends anything that was live back to reviewed — the recorded review was for the old wording.
+    const files = process.argv.slice(3).filter(x => /\.json$/i.test(x));
+    if (!files.length) { console.error('Usage: sync-items <file.json> [more.json ...] --actor <admin-email>'); process.exit(1); }
+    const i = process.argv.indexOf('--actor');
+    const email = i > -1 ? String(process.argv[i + 1] || '') : '';
+    if (!email) { console.error('--actor needs the email of the admin making these edits.'); process.exit(1); }
+    const actor = user(email);
+    const list = files.flatMap(f => JSON.parse(require('node:fs').readFileSync(path.resolve(f), 'utf8')).items);
+    const { syncItems } = require('./publish-items');
+    const r = syncItems(db, list, { actor });
+    console.log(`${list.length} question(s): ${r.updated} updated, ${r.unchanged} unchanged, ${r.returnedToReview} sent back to review`);
+    if (r.missing) console.log(`  ${r.missing} not stored yet — import those instead`);
+    if (r.rolledBack) {
+      console.log('ROLLED BACK — nothing changed.');
+      for (const x of r.results.filter(y => !y.ok)) console.log(`  #${x.row}${x.id ? ' ' + x.id : ''}: ${x.error}`);
+      process.exitCode = 1;
+    } else if (r.returnedToReview) {
+      console.log(`publish them again: node server/cli.js publish-items ${files.join(' ')} --actor ${actor.email}`);
+    }
   } else if (cmd === 'publish-items') {
     // The other side of import-items: that one can only create drafts, this one is how a
     // human's decision gets onto the record. It needs an admin to name, runs the same strict
@@ -262,7 +284,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file...> | publish-items <file...> --actor <email> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file...> | sync-items <file...> | publish-items <file...> --actor <email> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
   }
   db.close();
 })();

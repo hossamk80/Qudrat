@@ -3,7 +3,7 @@
 const assert = require('assert'), fs = require('fs'), os = require('os'), path = require('path');
 const { openDb } = require('../server/db');
 const { importItems } = require('../server/import-items');
-const { publishItems } = require('../server/publish-items');
+const { publishItems, syncItems } = require('../server/publish-items');
 
 const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'qudrat-publish-'));
 const db = openDb(dataDir);
@@ -74,6 +74,34 @@ for (const batch of rest) {
   assert.equal(r.published, 100, 'all hundred live');
 }
 
+// ---------- an edit in content/ reaching a question students are already reading ----------
+// Changing an option's wording changes the fingerprint, so publishItems can no longer find the
+// question at all. This is the path that carries such an edit onto the stored row.
+const edited = JSON.parse(JSON.stringify(batch));
+edited[0].options = [...edited[0].options];
+edited[0].options[(edited[0].answer === 'أ' ? 1 : 0)] += ' بلا استثناء';
+assert.equal(publishItems(db, [edited[0]], { actor, to: 'live' }).missing, 1, 'a reworded option is unfindable by fingerprint');
+
+const synced = syncItems(db, edited, { actor });
+assert(!synced.rolledBack, `the sync applies: ${JSON.stringify(synced.results.filter((x) => !x.ok).slice(0, 2))}`);
+assert.equal(synced.updated, 1, 'exactly the edited question is updated');
+assert.equal(synced.unchanged, 99, 'and the rest are left alone');
+assert.equal(synced.returnedToReview, 1, 'an edit to a live question sends it back to review');
+const back = db.prepare('SELECT * FROM items WHERE id = ?').get(synced.results.find((x) => !x.unchanged).id);
+assert.equal(back.status, 'reviewed', 'it is no longer live');
+assert(JSON.parse(back.options).some((o) => o.endsWith('بلا استثناء')), 'the new wording is stored');
+const trail = db.prepare('SELECT change FROM item_revisions WHERE item_id = ? ORDER BY id').all(back.id);
+assert.deepEqual(trail, [{ change: 'status' }, { change: 'status' }, { change: 'content' }, { change: 'status' }],
+  'the edit and the return to review are both on the record');
+assert.equal(syncItems(db, edited, { actor }).updated, 0, 're-syncing changes nothing');
+assert.throws(() => syncItems(db, edited, {}), /authorises/, 'no actor, no edit');
+// A question whose stem is not stored is for import, not for a silent swap.
+const stranger = { ...batch[0], text: 'سؤال لم يُستورد قطّ، فما حكمه؟' };
+assert.equal(syncItems(db, [stranger], { actor }).missing, 1, 'an unknown stem is reported, not guessed at');
+// And publishing it again puts it back, so the fix reaches students.
+assert.equal(publishItems(db, edited, { actor, to: 'live' }).published, 1, 'the corrected question publishes again');
+assert.equal(db.prepare("SELECT status FROM items WHERE id = ?").get(back.id).status, 'live', 'and is live');
+
 // And the bank the students read now carries all four hundred, each one approved by a person.
 const live = db.prepare("SELECT COUNT(*) AS n FROM items WHERE status = 'live'").get().n;
 assert.equal(live, byBatch.length * 100, `the live bank holds all ${byBatch.length} hundreds`);
@@ -82,4 +110,4 @@ assert.equal(db.prepare('SELECT COUNT(*) AS n FROM items WHERE reviewed_by IS NU
 assert.equal(db.prepare("SELECT COUNT(*) AS n FROM items WHERE author_kind != 'ai'").get().n, 0,
   'and authorship still records that a model wrote them');
 fs.rmSync(dataDir, { recursive: true, force: true });
-console.log('PASS: publishing from the command line — the hundred import as drafts and go live in two recorded steps; the approving admin is named in the item, the revision trail and the audit log while authorship still records the model; a model-authored item with a status but no review record is refused; publishing without a named admin throws; one unknown question rolls the whole batch back and leaves nothing moved; and a second run publishes nothing again; then every other batch publishes as one call across its own files, leaving all of them live and not one without a named approver.');
+console.log('PASS: publishing from the command line — the hundred import as drafts and go live in two recorded steps; the approving admin is named in the item, the revision trail and the audit log while authorship still records the model; a model-authored item with a status but no review record is refused; publishing without a named admin throws; one unknown question rolls the whole batch back and leaves nothing moved; and a second run publishes nothing again; then every other batch publishes as one call across its own files, leaving all of them live and not one without a named approver. An edit to an option\'s wording changes the fingerprint so publishing can no longer find the question; sync-items carries it onto the stored row by its stem, sends it back to review because the recorded review was for the old wording, keeps both the edit and the return in the revision trail, reports an unknown stem instead of guessing, and needs a named admin like publishing does.');
