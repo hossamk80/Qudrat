@@ -12,8 +12,12 @@ db.prepare(`INSERT INTO users (email, name, pass_hash, is_admin, created_at)
 const actor = db.prepare('SELECT * FROM users WHERE email = ?').get('admin@example.com');
 
 const read = f => JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'content', f), 'utf8')).items;
-const batch = [...read('batch-001-quant.json'), ...read('batch-001-verbal.json'), ...read('batch-001-reading.json')];
-assert.equal(batch.length, 100, 'the first batch is a hundred questions');
+// Derived from the directory, so a new batch is covered the moment it is authored.
+const files = fs.readdirSync(path.join(__dirname, '..', 'content')).filter((f) => /^batch-\d+-.*\.json$/.test(f)).sort();
+const numbers = [...new Set(files.map((f) => f.slice(6, 9)))];
+const byBatch = numbers.map((n) => files.filter((f) => f.startsWith(`batch-${n}-`)).flatMap(read));
+assert(byBatch.length >= 1 && byBatch.every((b) => b.length === 100), 'every batch is a hundred questions');
+const batch = byBatch[0];
 
 const imported = importItems(db, batch, { authorModel: 'test-model' });
 assert.equal(imported.added, 100, `all hundred import: ${JSON.stringify(imported.results.filter(r => !r.ok).slice(0, 3))}`);
@@ -62,10 +66,7 @@ assert.equal(again.published, 0, 'nothing published twice');
 
 // The remaining three batches, each published as one call across its own files: a batch of a
 // hundred lives in two or three of them, and all-or-nothing has to cover the whole hundred.
-const rest = ['002', '003', '004'].map((b) => fs.readdirSync(path.join(__dirname, '..', 'content'))
-  .filter((f) => f.startsWith(`batch-${b}-`)).sort()
-  .flatMap((f) => read(f)));
-assert.deepEqual(rest.map((b) => b.length), [100, 100, 100], 'three more hundreds');
+const rest = byBatch.slice(1);
 for (const batch of rest) {
   assert.equal(importItems(db, batch, { authorModel: 'test-model' }).added, 100, 'imports');
   const r = publishItems(db, batch, { actor, to: 'live', note: 'اعتماد الدفعة' });
@@ -75,10 +76,10 @@ for (const batch of rest) {
 
 // And the bank the students read now carries all four hundred, each one approved by a person.
 const live = db.prepare("SELECT COUNT(*) AS n FROM items WHERE status = 'live'").get().n;
-assert.equal(live, 400, 'the live bank holds the four hundred');
+assert.equal(live, byBatch.length * 100, `the live bank holds all ${byBatch.length} hundreds`);
 assert.equal(db.prepare('SELECT COUNT(*) AS n FROM items WHERE reviewed_by IS NULL').get().n, 0,
   'not one of them is live without a named approver');
 assert.equal(db.prepare("SELECT COUNT(*) AS n FROM items WHERE author_kind != 'ai'").get().n, 0,
   'and authorship still records that a model wrote them');
 fs.rmSync(dataDir, { recursive: true, force: true });
-console.log('PASS: publishing from the command line — the hundred import as drafts and go live in two recorded steps; the approving admin is named in the item, the revision trail and the audit log while authorship still records the model; a model-authored item with a status but no review record is refused; publishing without a named admin throws; one unknown question rolls the whole batch back and leaves nothing moved; and a second run publishes nothing again; then the other three batches each publish as one call across their own files, leaving four hundred live, none of them without a named approver.');
+console.log('PASS: publishing from the command line — the hundred import as drafts and go live in two recorded steps; the approving admin is named in the item, the revision trail and the audit log while authorship still records the model; a model-authored item with a status but no review record is refused; publishing without a named admin throws; one unknown question rolls the whole batch back and leaves nothing moved; and a second run publishes nothing again; then every other batch publishes as one call across its own files, leaving all of them live and not one without a named approver.');
