@@ -21,8 +21,13 @@ let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
 const perLetter = {};
-// 'يعطي ٩٦' / 'يعطي ٥٠°' — a number the explanation presents as what a mistake produces.
-const WRONG_RESULT = /(?:يعطي|فيكون الناتج|يُعطي)\s+([٠-٩\d][٠-٩\d٫.,/]*\s*[^\s،.]{0,6})/g;
+// A number the explanation offers as the origin of a WRONG CHOICE: 'يعطي ٩٦'، '٣٠٠ ناتج كذا'.
+// Such a number has to be one of the options, or the sentence points the student at a choice that
+// is not there. This is narrower than 'any number the explanation mentions': an explanation may
+// legitimately name the result of a bad method while saying it is not the answer — 'إضافة ١٢٪ إلى
+// ٤٤٠ تعطي ٤٩٢٫٨ وهي ليست الطريقة الصحيحة' teaches something and misleads nobody. No regex can
+// tell the two apart, so the rule covers the attributing phrasings only and review covers the rest.
+const WRONG_RESULT = /(?:يعطي|فيكون الناتج|يُعطي)\s+([٠-٩\d][٠-٩\d٫.,/]*\s*[^\s،.]{0,6})|و([٠-٩\d][٠-٩\d٫.,/]*)\s+ناتج/g;
 // Bare numeric value of a string, ignoring any unit, or null when it holds no numeral.
 function numeralOf(value) {
   const m = /([٠-٩\d]+(?:٫[٠-٩\d]+)?(?:\/[٠-٩\d]+)?)/.exec(String(value));
@@ -114,10 +119,10 @@ for (const file of files) {
     // An explanation that blames a wrong answer on a number nobody can choose teaches nothing
     // and reads as a slip: every value it presents as the result of an error must be an option.
     for (const m of String(raw.explanation).matchAll(WRONG_RESULT)) {
-      const n = numeralOf(m[1]);
+      const n = numeralOf(m[1] || m[2]);
       if (n === null) continue;
       if (!v.item.options.some((o) => numeralOf(o) === n)) {
-        console.log(`✗ ${where}: الشرح ينسب الناتج «${m[1]}» إلى خطأ وهو ليس بين الخيارات`); problems++; return;
+        console.log(`✗ ${where}: الشرح ينسب الناتج «${m[1] || m[2]}» إلى خطأ وهو ليس بين الخيارات`); problems++; return;
       }
     }
 
