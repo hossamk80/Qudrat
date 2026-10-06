@@ -21,6 +21,16 @@ let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
 const perLetter = {};
+// 'يعطي ٩٦' / 'يعطي ٥٠°' — a number the explanation presents as what a mistake produces.
+const WRONG_RESULT = /(?:يعطي|فيكون الناتج|يُعطي)\s+([٠-٩\d][٠-٩\d٫.,/]*\s*[^\s،.]{0,6})/g;
+// Bare numeric value of a string, ignoring any unit, or null when it holds no numeral.
+function numeralOf(value) {
+  const m = /([٠-٩\d]+(?:٫[٠-٩\d]+)?(?:\/[٠-٩\d]+)?)/.exec(String(value));
+  if (!m) return null;
+  const digits = [...m[1]].map((c) => (c >= '٠' && c <= '٩' ? String(c.charCodeAt(0) - 0x0660) : c)).join('').replace('٫', '.');
+  if (digits.includes('/')) { const [a, b] = digits.split('/'); return Number(a) / Number(b); }
+  return Number(digits);
+}
 const POSITIONAL = /(?:البديل|الخيار|العنوان|البديلان|العنوانان|الخيارين)\s*(?:الأول|الثاني|الثالث|الرابع)|الثلاثة\s+(?:الأولى|الأخرى|الأخيرة)/;
 const LETTER = /\p{Script=Arabic}/u;
 // Occurrences of `word` in `text` as a word of its own: Arabic has no \b, so the character
@@ -97,6 +107,16 @@ for (const file of files) {
       const hits = countWord(raw.text, k);
       if (hits !== 1) {
         console.log(`✗ ${where}: المفتاح «${k}» يرد ${hits} مرة في الجذع`); problems++; return;
+      }
+    }
+
+    // An explanation that blames a wrong answer on a number nobody can choose teaches nothing
+    // and reads as a slip: every value it presents as the result of an error must be an option.
+    for (const m of String(raw.explanation).matchAll(WRONG_RESULT)) {
+      const n = numeralOf(m[1]);
+      if (n === null) continue;
+      if (!v.item.options.some((o) => numeralOf(o) === n)) {
+        console.log(`✗ ${where}: الشرح ينسب الناتج «${m[1]}» إلى خطأ وهو ليس بين الخيارات`); problems++; return;
       }
     }
 
