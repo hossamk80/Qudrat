@@ -58,6 +58,7 @@ function numericValue(option) {
   return Number(digits);
 }
 const perCompare = {};
+const perRank = {};
 // dist/qiyas.js — the one order a comparison item is ever presented in.
 const COMPARISON_ORDER = ['القيمة الأولى أكبر', 'القيمة الثانية أكبر', 'القيمتان متساويتان', 'المعطيات غير كافية'];
 
@@ -120,6 +121,15 @@ for (const file of files) {
       }
     }
 
+    // Option length survives the shuffle that hides every position cue, so a key that is plainly
+    // the longest option is the one cue a student can use on the delivered question. Measured on
+    // the first five batches it held in 53 items, the key running 49% longer than its nearest rival.
+    const lens = v.item.options.map((o) => String(o).length);
+    const rival = Math.max(...lens.filter((_, j) => j !== v.item.answer));
+    if (lens[v.item.answer] >= 15 && lens[v.item.answer] >= rival * 1.2) {
+      console.log(`✗ ${where}: المفتاح أطول من أطول منافسيه بـ${Math.round(100 * lens[v.item.answer] / rival - 100)}٪`);
+      problems++; return;
+    }
     // A key that is the only multi-word option is a cue a student can use without reading the
     // stem, and a distractor that is numerically equal to the key makes two options correct.
     const words = v.item.options.map((o) => String(o).trim().split(/\s+/).length);
@@ -140,6 +150,10 @@ for (const file of files) {
         console.log(`✗ ${where}: خيارات المقارنة خارج الترتيب المعياري`); problems++; return;
       }
       perCompare[v.item.options[v.item.answer]] = (perCompare[v.item.options[v.item.answer]] || 0) + 1;
+    } else if (nums.every((n) => n !== null) && nums.every((n, j) => j === 0 || nums[j - 1] <= n)) {
+      // Ordered ascending: the key sits where its value puts it, so this is a fact about the
+      // distractor values, not a layout choice. Reported, never counted as imbalance.
+      perRank[v.item.answer + 1] = (perRank[v.item.answer + 1] || 0) + 1;
     } else perLetter[raw.answer] = (perLetter[raw.answer] || 0) + 1;
     perSkill[raw.skillId] = perSkill[raw.skillId] || { صعب: 0, متوسط: 0, سهل: 0 };
     perSkill[raw.skillId][raw.difficulty]++;
@@ -158,6 +172,13 @@ if (n >= 40) {
   // 11.34 is the 0.99 point of the chi-square distribution with 3 degrees of freedom.
   if (chi > 11.34) { console.log(`✗ موضع الجواب منحاز (${line}، كا²=${chi.toFixed(1)})`); problems++; }
   else console.log(`موضع الجواب متوازن — ${line} (كا²=${chi.toFixed(1)})`);
+}
+
+if (Object.keys(perRank).length) {
+  const n = [1, 2, 3, 4].reduce((a, r) => a + (perRank[r] || 0), 0);
+  console.log('مجموعات عددية مرتّبة تصاعديًّا: ' + n + ' · رتبة المفتاح فيها ' +
+    [1, 2, 3, 4].map((r) => `${r}: ${Math.round(100 * (perRank[r] || 0) / n)}٪`).join(' · ') +
+    ' — مشتّت يحيط بالمفتاح من جهتيه يجعله في الوسط، وهو تصميم أضعف من مشتّت مشتقّ من خطأ بعينه.');
 }
 
 if (Object.keys(perCompare).length) {
