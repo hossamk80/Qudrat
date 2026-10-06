@@ -59,8 +59,9 @@ function numericValue(option) {
   const m = NUMERIC.exec(String(option).trim());
   if (!m) return null;
   const digits = [...m[1]].map((c) => (c >= '٠' && c <= '٩' ? String(c.charCodeAt(0) - 0x0660) : c)).join('').replace('٫', '.');
-  if (digits.includes('/')) { const [a, b] = digits.split('/'); return Number(a) / Number(b); }
-  return Number(digits);
+  const unit = m[2].replace(/\s+/g, '');
+  if (digits.includes('/')) { const [a, b] = digits.split('/'); return { value: Number(a) / Number(b), unit }; }
+  return { value: Number(digits), unit };
 }
 const perCompare = {};
 const perRank = {};
@@ -143,7 +144,8 @@ for (const file of files) {
       console.log(`✗ ${where}: المفتاح هو الخيار الوحيد المركّب من أكثر من كلمة`); problems++; return;
     }
     const nums = v.item.options.map(numericValue);
-    if (nums.every((n) => n !== null) && new Set(nums).size < nums.length) {
+    const quantities = nums.map((n) => (n === null ? null : n.value + '\u0000' + n.unit));
+    if (nums.every((n) => n !== null) && new Set(quantities).size < quantities.length) {
       console.log(`✗ ${where}: خيارات متساوية القيمة العددية`); problems++; return;
     }
 
@@ -155,7 +157,7 @@ for (const file of files) {
         console.log(`✗ ${where}: خيارات المقارنة خارج الترتيب المعياري`); problems++; return;
       }
       perCompare[v.item.options[v.item.answer]] = (perCompare[v.item.options[v.item.answer]] || 0) + 1;
-    } else if (nums.every((n) => n !== null) && nums.every((n, j) => j === 0 || nums[j - 1] <= n)) {
+    } else if (nums.every((n) => n !== null) && nums.every((n, j) => j === 0 || nums[j - 1].value <= n.value)) {
       // Ordered ascending: the key sits where its value puts it, so this is a fact about the
       // distractor values, not a layout choice. Reported, never counted as imbalance.
       perRank[v.item.answer + 1] = (perRank[v.item.answer + 1] || 0) + 1;
