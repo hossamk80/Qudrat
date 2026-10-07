@@ -10,6 +10,7 @@
 //   node server/cli.js import-items <file.json> [more.json ...] [--model <name>]
 //   node server/cli.js sync-items <file.json> [more.json ...] --actor <admin-email>
 //   node server/cli.js publish-items <file.json> [more.json ...] --actor <admin-email> [--to reviewed] [--note "..."]
+//   node server/cli.js retire-items [file.json ...] [--id ID,ID] --actor <admin-email> --reason "..." [--restore] [--force]
 //   node server/cli.js audit-xlsx <file.xlsx> [more.xlsx ...]      (read-only, no writes)
 //   node server/cli.js import-xlsx <file.xlsx> --source "..." [--model <name>] [--profile <id>]
 //   node server/cli.js calibrate [--synthetic]
@@ -131,6 +132,48 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
       process.exitCode = 1;
     } else {
       console.log(`approved by ${actor.email} — recorded in items.reviewed_by, item_revisions and admin_audit`);
+    }
+  } else if (cmd === 'retire-items') {
+    // Withdraws published questions from what students see, or brings withdrawn ones back with
+    // --restore. A question is named either by the file it came from (matched on the fingerprint
+    // the importer stored, so pass the version that is IN the bank, not the corrected one) or by
+    // --id, which is the only way left once the stem itself has changed.
+    const files = process.argv.slice(3).filter(x => /\.json$/i.test(x));
+    const arg = name => { const i = process.argv.indexOf(name); return i > -1 ? String(process.argv[i + 1] || '') : ''; };
+    const ids = arg('--id').split(',').map(x => x.trim()).filter(Boolean);
+    if (!files.length && !ids.length) {
+      console.error('Usage: retire-items [file.json ...] [--id ID,ID] --actor <admin-email> --reason "..." [--restore] [--force]');
+      process.exit(1);
+    }
+    const email = arg('--actor');
+    if (!email) { console.error('--actor needs the email of the admin withdrawing these questions.'); process.exit(1); }
+    const actor = user(email);
+    const adminEmails = loadConfig().adminEmails;
+    if (!(actor.is_admin === 1 || adminEmails.has(actor.email.toLowerCase()))) {
+      console.error(`${actor.email} is not an admin. Use: node server/cli.js make-admin ${actor.email}`); process.exit(1);
+    }
+    const reason = arg('--reason');
+    if (!reason) { console.error('--reason is required: a withdrawal with nothing recorded about why is indistinguishable later from a mistake.'); process.exit(1); }
+    const restore = process.argv.includes('--restore'), force = process.argv.includes('--force');
+    const list = files.flatMap(f => JSON.parse(require('node:fs').readFileSync(path.resolve(f), 'utf8')).items);
+    const { retireItems, FLOOR } = require('./publish-items');
+    const r = retireItems(db, { list, ids, actor, reason, restore, force });
+    if (r.refused) {
+      console.log('REFUSED — nothing changed. Retiring these would drop a skill below the floor of ' + FLOOR + ' live questions:');
+      for (const s of r.skillsAtFloor) console.log(`  ${s.skill}: ${s.after} would be left (withdrawing ${s.losing})`);
+      console.log('Author replacements first, or pass --force if that is the intent.');
+      process.exitCode = 1;
+    } else if (r.rolledBack) {
+      console.log(`ROLLED BACK — nothing changed. missing: ${r.missing}, failed: ${r.failed}`);
+      for (const x of r.results.filter(y => !y.ok)) console.log(`  ${x.ref}: ${x.error}`);
+      process.exitCode = 1;
+    } else {
+      console.log(`${r.retired} retired, ${r.restored} restored, ${r.already} already there`);
+      for (const x of r.results.filter(y => y.ok && !y.already)) console.log(`  ${x.id}: ${x.from} -> ${x.to}`);
+      if (r.skillsAtFloor.length) console.log(`  below the floor of ${FLOOR} now: ` + r.skillsAtFloor.map(s => `${s.skill} (${s.after})`).join(', '));
+      if (r.orphanPassages.length) console.log('  passages left with no live question: ' + r.orphanPassages.join(', '));
+      console.log(`recorded by ${actor.email} in item_revisions and admin_audit — nothing was deleted`);
+      if (!restore) console.log('to undo: the same command with --restore, which returns them to draft for a fresh review');
     }
   } else if (cmd === 'audit-xlsx') {
     // Read-only. Measures a set of sheets before any of them is imported: how many rows are
@@ -284,7 +327,7 @@ const { migrateBank, backfillSkillIds, splitPassages } = require('./migrate-bank
     if (missing.length) console.log('unknown skill ids in the table:', missing.join(', '));
     console.log(`\n${SKILLS.length} skills; ${thin} under 25 live items (a skill under 25 cannot be measured).`);
   } else {
-    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file...> | sync-items <file...> | publish-items <file...> --actor <email> | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
+    console.log('Commands: make-admin <email> | reset-password <email> <password> | list | backup <file> | migrate-bank [--dry-run] | backfill-skills | split-passages | import-items <file...> | sync-items <file...> | publish-items <file...> --actor <email> | retire-items [file...] [--id ID,ID] --actor <email> --reason "..." [--restore] [--force] | audit-xlsx <files...> | import-xlsx <file> | calibrate [--synthetic] | simulate-responses | skills');
   }
   db.close();
 })();

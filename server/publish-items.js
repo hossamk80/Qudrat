@@ -200,3 +200,105 @@ function syncItems(db, list, { actor } = {}) {
 }
 
 module.exports.syncItems = syncItems;
+
+// Withdraws a question from what students see, and brings one back. The status machine has had
+// `retired` since the taxonomy work, and the admin route can reach it, but nothing could do it
+// from the command line — so a question found defective after publication could only be left
+// live. That is the gap this closes.
+//
+// Two facts decided the shape. First: an exam carries copies of its questions into the student's
+// own workspace, so retiring one cannot break an attempt in progress or a resumed one, and
+// `responses` and `item_stats` keep their rows either way — the measurement record of a withdrawn
+// question is the reason to withdraw it, not something to lose with it. Retiring is therefore safe
+// where deleting never is, and nothing here deletes.
+//
+// Second: the learning engine reads its skill counts from the live bank, and every skill is meant
+// to hold at least `FLOOR` questions. Retiring is the one operation that can breach that floor
+// silently, so it is counted before anything moves and refused by name unless the caller says in
+// so many words to go ahead. The refusal is the point: a bank that quietly thins out under
+// maintenance measures nothing.
+//
+// A reason is required. A retirement with nothing recorded about why is indistinguishable later
+// from a mistake, and this is the one operation whose whole value is the trail it leaves.
+const FLOOR = 25;
+
+function retireItems(db, { list = [], ids = [], actor, reason = '', restore = false, force = false } = {}) {
+  if (!actor || !actor.id) throw Error('retiring a question needs the admin who authorises it');
+  if (!String(reason).trim()) throw Error('retiring a question needs a reason on the record');
+  if (!list.length && !ids.length) throw Error('nothing to retire: pass the file(s) it came from, or --id');
+
+  const to = restore ? 'draft' : 'retired';
+  const byPrint = db.prepare('SELECT * FROM items WHERE fingerprint = ?');
+  const byId = db.prepare('SELECT * FROM items WHERE id = ?');
+  const liveInSkill = db.prepare(`SELECT COUNT(*) AS n FROM items WHERE status = 'live' AND skill_id = ?`);
+  const setStatus = db.prepare('UPDATE items SET status = ?, updated_at = ? WHERE id = ?');
+  const insertRevision = db.prepare(`INSERT INTO item_revisions
+    (item_id, actor_id, actor_email, change, before, after, at) VALUES (?, ?, ?, ?, ?, ?, ?)`);
+  const insertAudit = db.prepare(`INSERT INTO admin_audit
+    (actor_id, actor_email, action, target_id, target_email, ip, at) VALUES (?, ?, ?, ?, ?, '', ?)`);
+
+  const report = { retired: 0, restored: 0, already: 0, missing: 0, failed: 0, results: [],
+    skillsAtFloor: [], orphanPassages: [] };
+  const at = new Date().toISOString();
+
+  // Resolve every target first, so the floor can be counted on the whole set rather than one at a
+  // time: three questions each leaving a skill one above the floor still breach it together.
+  const targets = [];
+  const seen = new Set();
+  const take = (row, label) => {
+    if (!row) { report.results.push({ ref: label, ok: false, error: 'غير موجود في القاعدة' }); report.missing++; return; }
+    if (seen.has(row.id)) return;
+    seen.add(row.id);
+    if (row.status === to) { report.results.push({ ref: label, ok: true, id: row.id, already: true }); report.already++; return; }
+    if (!items.canTransition(row.status, to)) {
+      report.results.push({ ref: label, ok: false, id: row.id, error: `لا يمكن الانتقال من ${row.status} إلى ${to}.` });
+      report.failed++; return;
+    }
+    targets.push(row);
+  };
+  ids.forEach((id) => take(byId.get(String(id).trim()), String(id).trim()));
+  list.forEach((raw, i) => {
+    const print = printOf(raw);
+    if (!print) { report.results.push({ ref: `#${i + 1}`, ok: false, error: 'لا يجتاز الفحص' }); report.failed++; return; }
+    take(byPrint.get(print), `#${i + 1}`);
+  });
+
+  if (!restore) {
+    const losing = {};
+    for (const row of targets) if (row.status === 'live') losing[row.skill_id] = (losing[row.skill_id] || 0) + 1;
+    for (const [skill, n] of Object.entries(losing)) {
+      const after = liveInSkill.get(skill).n - n;
+      if (after < FLOOR) report.skillsAtFloor.push({ skill, after, losing: n });
+    }
+    if (report.skillsAtFloor.length && !force) {
+      report.refused = true;
+      return report;                      // nothing touched, and the caller is told which skills
+    }
+  }
+
+  db.exec('BEGIN');
+  try {
+    for (const row of targets) {
+      setStatus.run(to, at, row.id);
+      insertRevision.run(row.id, actor.id, actor.email, 'status',
+        JSON.stringify({ status: row.status }), JSON.stringify({ status: to, note: reason }), at);
+      insertAudit.run(actor.id, actor.email, `item-status:${row.status}->${to}`, row.id, '', at);
+      report.results.push({ ref: row.id, ok: true, id: row.id, from: row.status, to });
+      if (restore) report.restored++; else report.retired++;
+    }
+    // A passage whose last live question is gone is not served to anyone, but it is also not an
+    // error: it stays for the questions still attached to it in draft or retired. Reported so a
+    // reviewer who meant to withdraw one question of a group learns they withdrew the group.
+    const passageIds = [...new Set(targets.map((r) => r.passage_id).filter(Boolean))];
+    for (const pid of passageIds) {
+      const left = db.prepare(`SELECT COUNT(*) AS n FROM items WHERE passage_id = ? AND status = 'live'`).get(pid).n;
+      if (!left) report.orphanPassages.push(pid);
+    }
+    if (report.failed || report.missing) { db.exec('ROLLBACK'); report.rolledBack = true; }
+    else db.exec('COMMIT');
+  } catch (err) { db.exec('ROLLBACK'); throw err; }
+  return report;
+}
+
+module.exports.retireItems = retireItems;
+module.exports.FLOOR = FLOOR;

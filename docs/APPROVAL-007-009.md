@@ -74,3 +74,32 @@ node server/cli.js publish-items content/batch-009-*.json \
 وكلّ مهارة من الثلاثين فوق أرضيّة الـ٢٥ سؤالًا. وتسمية «صعب» و«متوسط» تقديرٌ
 تحريريّ لا معايرة، ولا تصير معايرةً إلا بعد ٣٠٠ استجابة حقيقية للسؤال الواحد — ولا
 يُعرض على طالب تقديرٌ لدرجة قياس بحال.
+
+---
+
+## تحديث: طريق الإحالة صار موجودًا
+
+بُني `retire-items` (انظر `docs/ITEM-LIFECYCLE.md`)، فصار سؤالا التناظر قابلين
+للسحب. وهما يُعرَفان بمعرّفيهما لأن جذعيهما تغيّرا، والمعرّفان في بنكك قد يختلفان عن
+بنك التجربة، فاقرأهما أولًا:
+
+```
+node server/cli.js list --skill VA-AGENT | grep "حدّاد"
+node server/cli.js list --skill VA-ORDER | grep "مَشتل"
+```
+
+ثم اسحبهما وأدخل بديليهما:
+
+```
+node server/cli.js retire-items --id <معرّف حدّاد>,<معرّف مَشتل> \
+  --actor hossam198012@gmail.com \
+  --reason "المفتاح يُجاب بتطابق الحروف مع الجذع؛ أُبدلا بنجّار←خشب ومنحل←عسل"
+
+node server/cli.js import-items  content/batch-001-verbal.json content/batch-004-verbal.json
+node server/cli.js publish-items content/batch-001-verbal.json content/batch-004-verbal.json \
+  --actor hossam198012@gmail.com --note "النسختان المصحَّحتان بعد القاعدة الحادية عشرة"
+```
+
+والاستيراد لا يُدخل إلا الجديدين ويَرفض الـ٩٨ الباقية مكرّرةً باسم ما يُطابقها، وهذا
+هو المقصود. وإن رفض الأمر الإحالة لأن المهارة تَهبط تحت الأرضيّة فابدأ بالاستيراد
+والنشر ثم اسحب، فيكون البديل حيًّا قبل أن يُسحب المسحوب.
