@@ -21,7 +21,12 @@ assert(all.length >= 100 && all.length % 100 === 0, 'the batches are whole hundr
 const BATCHES = all.length / 100;
 assert(all.every(x => x.difficulty !== 'سهل'), 'the batch is medium and hard only; the bank is already 63% easy');
 const hard = all.filter(x => x.difficulty === 'صعب').length;
-assert(hard >= 75 * BATCHES, 'most of it is hard, which is where the bank is thinnest: ' + hard);
+// Batches 1-8 were mostly hard because the published bank was only 10% hard. They filled that
+// band: the whole bank is now 34% hard, 23% medium, 43% easy, and medium is the thin one -- 9 to
+// 32 items per skill, against at least ten easy items in every one of the thirty. So batch 9 is
+// medium throughout, and the invariant is no longer 'mostly hard' but 'never easy, and hard is
+// never a minority of what we authored'.
+assert(hard >= all.length / 2, 'hard is at least half of the authored set: ' + hard + ' of ' + all.length);
 assert(all.every(x => x.source && x.source.includes('تأليف أصلي')),
   'every item documents original authorship, which the publish gate requires');
 assert(all.every(x => T.SKILL_IDS.has(x.skillId)), 'every item names a skill from the closed list');
