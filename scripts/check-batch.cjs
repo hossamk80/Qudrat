@@ -20,7 +20,9 @@ for (const q of bank.questions) {
 let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
-const seenStems = new Map();   // normalized stem -> option sets already seen, for the twin rule
+const seenStems = new Map();
+const sameAnswerSets = new Map(); // skill+options+key -> where, for the twin REPORT below
+const twins = [];   // normalized stem -> option sets already seen, for the twin rule
 const perLetter = {};
 // A number the explanation offers as the origin of a WRONG CHOICE: 'يعطي ٩٦'، '٣٠٠ ناتج كذا'.
 // Such a number has to be one of the options, or the sentence points the student at a choice that
@@ -222,6 +224,21 @@ for (const file of files) {
       seenStems.get(stem).push({ options: norm, where });
     }
 
+    // Same skill, same four options, same key, different stem: usually two different questions
+    // that happen to offer the same numbers — 5 of the 11 pairs in the bank are exactly that —
+    // but the other 6 are one question asked twice in different words, which no text comparison
+    // can tell apart from a coincidence. So this is reported for review, never rejected: a gate
+    // that is wrong two times in five is a gate nobody trusts.
+    {
+      // Comparison items all carry COMPARISON_ORDER by design, so every two of them that share an
+      // answer type would collide: they are the one family this says nothing about.
+      const opts = v.item.options.map((o) => I.normalizeText(o));
+      const isCompare = COMPARISON_ORDER.every((o) => v.item.options.includes(o));
+      const sig = isCompare ? null : raw.skillId + '|' + [...opts].sort().join('~') + '|' + opts[v.item.answer];
+      if (sig && sameAnswerSets.has(sig)) twins.push([sameAnswerSets.get(sig), where]);
+      else if (sig) sameAnswerSets.set(sig, where);
+    }
+
     // qiyas.js forces comparison items into COMPARISON_ORDER at delivery, so their stored order
     // must match it and their key position is decided by content, not by us: they are checked for
     // that order and left out of the balance below, which would otherwise be meaningless for them.
@@ -270,5 +287,10 @@ for (const [id, d] of Object.entries(perSkill).sort()) {
   console.log(`  ${id.padEnd(15)} صعب ${String(d['صعب']).padStart(2)} · متوسط ${String(d['متوسط']).padStart(2)} · سهل ${String(d['سهل']).padStart(2)}`);
 }
 const total = Object.values(perSkill).reduce((n, d) => n + d['صعب'] + d['متوسط'] + d['سهل'], 0);
+if (twins.length) {
+  console.log(`\nيُراجَع: ${twins.length} زوجًا من الأسئلة تَشترك في المهارة والخيارات الأربعة والمفتاح، وتَختلف جذوعها —` +
+    ' بعضها مسألتان مختلفتان تَصادفت خياراتهما، وبعضها سؤالٌ واحد بلفظين. لا يُرفض شيء، والحكم للمراجعة:');
+  for (const [a, b] of twins) console.log(`  ${a}  ≈  ${b}`);
+}
 console.log(`\nسليم: ${total} · مفاتيح محسوبة: ${checked} · بلا تعبير تحقّق: ${unchecked} · مشاكل: ${problems}`);
 process.exitCode = problems ? 1 : 0;
