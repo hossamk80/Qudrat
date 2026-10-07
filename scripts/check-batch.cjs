@@ -20,6 +20,7 @@ for (const q of bank.questions) {
 let problems = 0, checked = 0, unchecked = 0;
 const seen = new Map();
 const perSkill = {};
+const seenStems = new Map();   // normalized stem -> option sets already seen, for the twin rule
 const perLetter = {};
 // A number the explanation offers as the origin of a WRONG CHOICE: 'يعطي ٩٦'، '٣٠٠ ناتج كذا'.
 // Such a number has to be one of the options, or the sentence points the student at a choice that
@@ -200,6 +201,25 @@ for (const file of files) {
       if (echo && !shared) {
         console.log(`✗ ${where}: المفتاح وحده يشارك الجذع جذره («${echo}»)`); problems++; return;
       }
+    }
+
+    // Two questions with one stem and three of four options in common are the same question with
+    // a word swapped: the fingerprint does not see it, because an option's wording is part of the
+    // hash, and the duplicate rule above compares whole option sets. What this catches is a bank
+    // padded by variation rather than grown — and, in the worst case, one question asked twice
+    // with the same key, which is how it turned up: نَجّار : كُرسيّ :: خَيّاط : ثَوب, twice.
+    // syncItems already treats this overlap as identity when it matches a stored row, so a bank
+    // that holds such a pair cannot be edited by file at all.
+    {
+      const norm = v.item.options.map((o) => I.normalizeText(o));
+      const want = new Set(norm);
+      const stem = I.normalizeText(v.item.text) + '\u0000' + I.normalizeText(v.item.passageText || '');
+      const twin = (seenStems.get(stem) || []).find((prev) => prev.options.filter((o) => want.has(o)).length >= 3);
+      if (twin) {
+        console.log(`✗ ${where}: يشارك «${twin.where}» الجذعَ وثلاثةً من خياراته`); problems++; return;
+      }
+      if (!seenStems.has(stem)) seenStems.set(stem, []);
+      seenStems.get(stem).push({ options: norm, where });
     }
 
     // qiyas.js forces comparison items into COMPARISON_ORDER at delivery, so their stored order
