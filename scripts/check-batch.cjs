@@ -36,6 +36,36 @@ function numeralOf(value) {
   if (digits.includes('/')) { const [a, b] = digits.split('/'); return Number(a) / Number(b); }
   return Number(digits);
 }
+// A ratio written 'أ : ب', in lowest terms, or null when the option is not one.
+const RATIO = /^([٠-٩\d]+)\s*:\s*([٠-٩\d]+)$/;
+function ratioValue(option) {
+  const m = RATIO.exec(String(option).trim());
+  if (!m) return null;
+  const n = (d) => Number([...d].map((c) => (c >= '٠' && c <= '٩' ? String(c.charCodeAt(0) - 0x0660) : c)).join(''));
+  let [a, b] = [n(m[1]), n(m[2])];
+  if (!b) return null;
+  const g = (x, y) => (y ? g(y, x % y) : x);
+  const d = g(a, b) || 1;
+  return (a / d) + ':' + (b / d);
+}
+// Consonant skeleton of an Arabic word: diacritics, the article, the weak letters and the common
+// affixes dropped. Deliberately crude — it is only compared for exact equality, so a near miss
+// says nothing and only two words built on the same root collide.
+const ROOT_ECHO_SKILLS = new Set(['VC-LEXICAL', 'VC-CONTEXT', 'VA-SEMANTIC', 'VA-FUNCTION', 'VA-AGENT', 'VA-ORDER', 'VO-CLASS']);
+function skeleton(word) {
+  let w = String(word).replace(/[\u064B-\u0652\u0670]/g, '').replace(/[«».,!?؟،:؛()]/g, '');
+  w = w.replace(/^(?:وال|فال|بال|كال|ال|لل)/, '').replace(/^[وفبلكمتيسن]/, '');
+  w = w.replace(/(?:ات|ين|ون|ها|هم|كم|نا|ة|ه|ًا)$/, '');
+  return w.replace(/[اأإآىيوءئؤ]/g, '');
+}
+function rootEcho(key, stem) {
+  const k = skeleton(key);
+  if (k.length < 3) return null;
+  for (const word of String(stem).split(/\s+/)) {
+    if (skeleton(word) === k && word.replace(/[«».,!?؟،:؛()]/g, '') !== String(key)) return word;
+  }
+  return null;
+}
 const POSITIONAL = /(?:البديل|الخيار|العنوان|البديلان|العنوانان|الخيارين)\s*(?:الأول|الثاني|الثالث|الرابع)|الثلاثة\s+(?:الأولى|الأخرى|الأخيرة)/;
 const LETTER = /\p{Script=Arabic}/u;
 // Occurrences of `word` in `text` as a word of its own: Arabic has no \b, so the character
@@ -147,6 +177,29 @@ for (const file of files) {
     const quantities = nums.map((n) => (n === null ? null : n.value + '\u0000' + n.unit));
     if (nums.every((n) => n !== null) && new Set(quantities).size < quantities.length) {
       console.log(`✗ ${where}: خيارات متساوية القيمة العددية`); problems++; return;
+    }
+
+    // A ratio is not a number our reader parses, so '١ : ٣' and '٣ : ٩' slip past the rule above
+    // while being one and the same ratio: a student who sees they are equal eliminates both and
+    // the item is left with two options. Compared in lowest terms, which is what a ratio means.
+    const ratios = v.item.options.map(ratioValue);
+    if (ratios.every((r) => r !== null) && new Set(ratios).size < ratios.length) {
+      console.log(`✗ ${where}: خياران يعبّران عن نسبة واحدة`); problems++; return;
+    }
+    // A key that shares its root with a word in the stem can be picked by matching letters without
+    // reading the sentence. In VE-FACT and VE-CONTRADICT the key IS a word of the stem by design,
+    // and in reading the answer is a sentence drawing on the passage's own words, so this applies
+    // to the one-word-option skills where the echo is a giveaway and nothing else.
+    // The echo only hands over the answer when the key alone carries it: in 'خبّاز : ؟' both خبز
+    // and مخبز answer the letters, so matching them decides nothing and the item still asks for
+    // the relation.
+    if (ROOT_ECHO_SKILLS.has(raw.skillId) && words[key] === 1) {
+      const echo = rootEcho(v.item.options[key], v.item.text);
+      const shared = v.item.options.some((o, i) => i !== key && String(o).trim().split(/\s+/).length === 1
+        && rootEcho(o, v.item.text));
+      if (echo && !shared) {
+        console.log(`✗ ${where}: المفتاح وحده يشارك الجذع جذره («${echo}»)`); problems++; return;
+      }
     }
 
     // qiyas.js forces comparison items into COMPARISON_ORDER at delivery, so their stored order
